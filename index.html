@@ -132,6 +132,11 @@ body{
 
 <div class="container" id="resultado"></div>
 
+<footer class="footer">
+  <strong>Pinheirinho Celulares</strong>
+  <span>Desenvolvido por Mattheus Avilar • Versão 1.5</span>
+</footer>
+
 <script>
 // ========= FUNÇÃO DE NORMALIZAÇÃO (BUSCA INTELIGENTE) =========
 function normalizar(txt){
@@ -140,9 +145,6 @@ function normalizar(txt){
     .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
     .replace(/[^a-z0-9]/g,"");
 }
-
-// Desenvolvido por Mattheus Avilar • Versão 1.5 • Pinheirinho Celulares
-</script>
 
 // ================= BASE DE DADOS =================
 const dados = [
@@ -333,3 +335,4 @@ function render(filtro=""){
 </script>
 </body>
 </html>
+
