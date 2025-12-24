@@ -7,8 +7,8 @@
 
 <style>
 :root{
-  --azul:#1f4fd8;
-  --laranja:#ff7a00;
+  --azul:#0d3bff;      /* azul mais vivo */
+  --laranja:#ff6a00;   /* laranja mais forte */
 }
 
 *{box-sizing:border-box}
@@ -16,7 +16,13 @@
 body{
   margin:0;
   font-family:Segoe UI, Arial, sans-serif;
-  background:linear-gradient(135deg,#dbe7ff,#eef3ff,#fff1e4,#ffd2a8);
+  background:linear-gradient(
+    135deg,
+    rgba(219,231,255,.9),
+    rgba(238,243,255,.9),
+    rgba(255,241,228,.9),
+    rgba(255,210,168,.9)
+  );
   background-attachment:fixed;
 }
 
@@ -45,11 +51,16 @@ body{
   border-radius:50px;
   border:3px solid var(--azul);
   outline:none;
-  box-shadow:0 14px 30px rgba(0,0,0,.25);
+
+  background:rgba(255,255,255,.75);
+  backdrop-filter:blur(8px);
+
+  box-shadow:0 16px 35px rgba(0,0,0,.25);
 }
 
 .search input:focus{
   border-color:var(--laranja);
+  box-shadow:0 18px 40px rgba(255,106,0,.35);
 }
 
 /* RESULTS */
@@ -60,12 +71,15 @@ body{
 }
 
 .card{
-  background:#fff;
-  border-radius:18px;
+  background:rgba(255,255,255,.72);
+  backdrop-filter:blur(10px);
+
+  border-radius:20px;
   padding:22px;
   margin-bottom:18px;
-  box-shadow:0 14px 30px rgba(0,0,0,.22);
-  border-left:8px solid var(--azul);
+
+  box-shadow:0 18px 40px rgba(0,0,0,.25);
+  border-left:9px solid var(--azul);
 }
 
 .modelo{
@@ -76,25 +90,25 @@ body{
 
 .marca{
   font-size:14px;
-  color:#666;
+  color:#555;
   margin:6px 0 12px;
 }
 
 .adaptacoes{
   line-height:1.8;
-  color:#333;
+  color:#222;
 }
 
 .vazio{
   text-align:center;
   padding:40px;
-  color:#444;
+  color:#333;
 }
 
 /* FOOTER */
 .footer{
-  background:rgba(255,255,255,.7);
-  backdrop-filter:blur(6px);
+  background:rgba(255,255,255,.55);
+  backdrop-filter:blur(10px);
   border-top:1px solid rgba(0,0,0,.08);
   text-align:center;
   padding:18px 10px;
@@ -102,25 +116,12 @@ body{
 }
 
 .footer strong{color:var(--azul)}
-.footer span{display:block;font-size:13px;color:#777;margin-top:5px}
-</style>
-</head>
-
-<body>
-
-<div class="header">
-  <img src="./amg/logo.png" alt="Pinheirinho Celulares">
-  <div class="search">
-    <input id="busca" placeholder="Digite o modelo do celular ou da película">
-  </div>
-</div>
-
-<div class="container" id="resultado"></div>
-
-<div class="footer">
-  Desenvolvido e programado por <strong>Mattheus Avilar</strong>
-  <span>Versão 1.5 • Beta</span>
-</div>
+.footer span{
+  display:block;
+  font-size:13px;
+  color:#666;
+  margin-top:5px
+}
 
 <script>
 // ========= FUNÇÃO DE NORMALIZAÇÃO (BUSCA INTELIGENTE) =========
@@ -323,5 +324,6 @@ render();
 </script>
 </body>
 </html>
+
 
 
