@@ -134,7 +134,15 @@ body{
   color:#666;
   margin-top:5px;
 }
-
+  
+<script>
+// ========= FUNÇÃO DE NORMALIZAÇÃO =========
+function normalizar(txt){
+  return txt
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/[^a-z0-9]/g,"");
+}
 /* ================= SAMSUNG ================= */
 {marca:"Samsung",modelo:"A01",adaptacoes:["Xiaomi Mi Play"]},
 {marca:"Samsung",modelo:"A02",adaptacoes:["Samsung A02S","Samsung A03","Samsung A03S","Samsung A03 Core","Samsung A04","Samsung A04S","Samsung A04E","Samsung A12","Samsung A13","Samsung M23","Samsung A70","Xiaomi 9A","Xiaomi 9A Sport","Xiaomi 9i","Xiaomi 9C","Motorola E7","Motorola E7 Power"]},
@@ -332,6 +340,7 @@ render();
 
 </body>
 </html>
+
 
 
 
