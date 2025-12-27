@@ -7,13 +7,11 @@
 
 <style>
 :root{
-  --azul:#0d3bff;      /* Azul mais vivo */
-  --laranja:#ff6a00;   /* Laranja mais forte */
+  --azul:#0d3bff;
+  --laranja:#ff6a00;
 }
 
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
   margin:0;
@@ -28,7 +26,7 @@ body{
   background-attachment:fixed;
 }
 
-/* ================= HEADER ================= */
+/* HEADER */
 .header{
   text-align:center;
   padding:40px 15px 30px;
@@ -39,7 +37,7 @@ body{
   margin-bottom:25px;
 }
 
-/* ================= SEARCH ================= */
+/* SEARCH */
 .search{
   display:flex;
   justify-content:center;
@@ -61,10 +59,9 @@ body{
 
 .search input:focus{
   border-color:var(--laranja);
-  box-shadow:0 20px 45px rgba(255,106,0,.4);
 }
 
-/* ================= RESULTS ================= */
+/* RESULTADOS */
 .container{
   max-width:1250px;
   margin:auto;
@@ -79,15 +76,8 @@ body{
   margin-bottom:18px;
   box-shadow:0 20px 45px rgba(0,0,0,.25);
   border-left:9px solid var(--azul);
-  transition:.25s;
 }
 
-.card:hover{
-  transform:translateY(-2px);
-  box-shadow:0 24px 55px rgba(0,0,0,.28);
-}
-
-/* ================= TEXT ================= */
 .modelo{
   font-size:20px;
   font-weight:800;
@@ -102,19 +92,16 @@ body{
 
 .adaptacoes{
   line-height:1.7;
-  color:#222;
   font-size:15px;
 }
 
-/* ================= EMPTY ================= */
 .vazio{
   text-align:center;
   padding:40px;
-  color:#333;
   font-weight:600;
 }
 
-/* ================= FOOTER ================= */
+/* FOOTER */
 .footer{
   background:rgba(255,255,255,.6);
   backdrop-filter:blur(12px);
@@ -123,26 +110,40 @@ body{
   padding:18px 10px;
   font-size:14px;
 }
+</style>
+</head>
 
-.footer strong{
-  color:var(--azul);
-}
+<body>
 
-.footer span{
-  display:block;
-  font-size:13px;
-  color:#666;
-  margin-top:5px;
-}
-  
+<div class="header">
+  <img src="./amg/logo.png" alt="Pinheirinho Celulares">
+  <div class="search">
+    <input id="busca" placeholder="Digite o modelo do celular ou da película">
+  </div>
+</div>
+
+<div class="container" id="resultado"></div>
+
+<div class="footer">
+  Desenvolvido por <strong>Mattheus Avilar</strong>
+  <span>Versão 1.5 • Base não final</span>
+</div>
+
 <script>
-// ========= FUNÇÃO DE NORMALIZAÇÃO =========
+// ===== NORMALIZA TEXTO =====
 function normalizar(txt){
   return txt
     .toLowerCase()
     .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
     .replace(/[^a-z0-9]/g,"");
 }
+
+const busca = document.getElementById("busca");
+const resultado = document.getElementById("resultado");
+
+// ===== BASE DE DADOS (CONTINUA COM SAMSUNG) =====
+const dados = [
+
 /* ================= SAMSUNG ================= */
 {marca:"Samsung",modelo:"A01",adaptacoes:["Xiaomi Mi Play"]},
 {marca:"Samsung",modelo:"A02",adaptacoes:["Samsung A02S","Samsung A03","Samsung A03S","Samsung A03 Core","Samsung A04","Samsung A04S","Samsung A04E","Samsung A12","Samsung A13","Samsung M23","Samsung A70","Xiaomi 9A","Xiaomi 9A Sport","Xiaomi 9i","Xiaomi 9C","Motorola E7","Motorola E7 Power"]},
@@ -340,6 +341,7 @@ render();
 
 </body>
 </html>
+
 
 
 
