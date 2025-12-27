@@ -12,11 +12,15 @@
   --laranja:#ff6a00;
 }
 
-*{ box-sizing:border-box }
+/* ================= RESET ================= */
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
 
 /* ================= BODY ================= */
 body{
-  margin:0;
   font-family:Segoe UI, Arial, sans-serif;
   background:linear-gradient(
     135deg,
@@ -34,7 +38,7 @@ body{
   padding:40px 15px 30px;
 }
 
-.header img{
+.logo{
   max-width:280px;
   margin-bottom:25px;
 }
@@ -53,7 +57,7 @@ body{
   border-radius:50px;
   border:3px solid var(--azul);
   outline:none;
-  background:rgba(255,255,255,.78);
+  background:rgba(255,255,255,.8);
   backdrop-filter:blur(10px);
   box-shadow:0 18px 40px rgba(0,0,0,.25);
   transition:.25s;
@@ -79,15 +83,8 @@ body{
   margin-bottom:18px;
   box-shadow:0 20px 45px rgba(0,0,0,.25);
   border-left:9px solid var(--azul);
-  transition:.25s;
 }
 
-.card:hover{
-  transform:translateY(-2px);
-  box-shadow:0 24px 55px rgba(0,0,0,.28);
-}
-
-/* ================= TEXTO ================= */
 .modelo{
   font-size:20px;
   font-weight:800;
@@ -101,45 +98,40 @@ body{
 }
 
 .adaptacoes{
-  line-height:1.7;
-  color:#222;
   font-size:15px;
+  line-height:1.7;
 }
 
 /* ================= VAZIO ================= */
 .vazio{
   text-align:center;
   padding:40px;
-  color:#333;
   font-weight:600;
 }
 
 /* ================= FOOTER ================= */
 .footer{
-  background:rgba(255,255,255,.6);
-  backdrop-filter:blur(12px);
-  border-top:1px solid rgba(0,0,0,.08);
   text-align:center;
   padding:18px 10px;
   font-size:14px;
+  background:rgba(255,255,255,.6);
+  backdrop-filter:blur(12px);
+  border-top:1px solid rgba(0,0,0,.1);
 }
 
-.footer strong{ color:var(--azul) }
-
-.footer span{
-  display:block;
-  font-size:13px;
-  color:#666;
-  margin-top:5px;
+.footer strong{
+  color:var(--azul);
 }
 </style>
 </head>
 
 <body>
 
-<!-- ================= TOPO ================= -->
+<!-- ================= LOGO ================= -->
 <div class="header">
-  <img src="./img/logo.png" alt="Pinheirinho Celulares">
+  <!-- 🔴 A LOGO PRECISA ESTAR NA MESMA PASTA -->
+  <img src="logo.png" alt="Pinheirinho Celulares" class="logo">
+
   <div class="search">
     <input id="busca" placeholder="Digite o modelo do celular ou da película">
   </div>
@@ -151,11 +143,11 @@ body{
 <!-- ================= RODAPÉ ================= -->
 <div class="footer">
   Desenvolvido por <strong>Mattheus Avilar</strong>
-  <span>Versão 1.5 • Base não final</span>
+  <div>Versão 1.5 • Base não final</div>
 </div>
 
 <script>
-// ================= NORMALIZAÇÃO =================
+/* ========= NORMALIZA TEXTO ========= */
 function normalizar(txt){
   return txt
     .toLowerCase()
@@ -165,6 +157,10 @@ function normalizar(txt){
 
 const busca = document.getElementById("busca");
 const resultado = document.getElementById("resultado");
+
+/* =================================================
+  ADICIONE OS MODELOS AQUI
+================================================== */
 const dados = [
 
 /* ================= SAMSUNG ================= */
@@ -318,21 +314,17 @@ const dados = [
 
 ];
 
-// ================= RENDER =================
+/* ================= RENDER ================= */
 function render(filtro=""){
   const f = normalizar(filtro);
 
   const encontrados = dados.filter(d =>
-    normalizar(
-      d.marca + " " +
-      d.modelo + " " +
-      (d.adaptacoes ? d.adaptacoes.join(" ") : "")
-    ).includes(f)
+    normalizar(d.marca + d.modelo + d.adaptacoes.join(" "))
+    .includes(f)
   );
 
   if(!encontrados.length){
-    resultado.innerHTML =
-      `<div class="vazio">Nenhum modelo encontrado.</div>`;
+    resultado.innerHTML = `<div class="vazio">Nenhum modelo encontrado.</div>`;
     return;
   }
 
@@ -342,9 +334,7 @@ function render(filtro=""){
       <div class="marca">${d.marca}</div>
       <div class="adaptacoes">
         <strong>Compatível com:</strong><br>
-        ${d.adaptacoes && d.adaptacoes.length
-          ? d.adaptacoes.join(", ")
-          : "Sem adaptações cadastradas"}
+        ${d.adaptacoes.join(", ")}
       </div>
     </div>
   `).join("");
@@ -356,4 +346,3 @@ render();
 
 </body>
 </html>
-
