@@ -6,13 +6,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+/* ================= VARIÁVEIS ================= */
 :root{
   --azul:#0d3bff;
   --laranja:#ff6a00;
 }
 
-*{box-sizing:border-box}
+*{ box-sizing:border-box }
 
+/* ================= BODY ================= */
 body{
   margin:0;
   font-family:Segoe UI, Arial, sans-serif;
@@ -26,7 +28,7 @@ body{
   background-attachment:fixed;
 }
 
-/* HEADER */
+/* ================= HEADER ================= */
 .header{
   text-align:center;
   padding:40px 15px 30px;
@@ -37,7 +39,7 @@ body{
   margin-bottom:25px;
 }
 
-/* SEARCH */
+/* ================= SEARCH ================= */
 .search{
   display:flex;
   justify-content:center;
@@ -59,9 +61,10 @@ body{
 
 .search input:focus{
   border-color:var(--laranja);
+  box-shadow:0 20px 45px rgba(255,106,0,.4);
 }
 
-/* RESULTADOS */
+/* ================= RESULTADOS ================= */
 .container{
   max-width:1250px;
   margin:auto;
@@ -76,8 +79,15 @@ body{
   margin-bottom:18px;
   box-shadow:0 20px 45px rgba(0,0,0,.25);
   border-left:9px solid var(--azul);
+  transition:.25s;
 }
 
+.card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 24px 55px rgba(0,0,0,.28);
+}
+
+/* ================= TEXTO ================= */
 .modelo{
   font-size:20px;
   font-weight:800;
@@ -92,16 +102,19 @@ body{
 
 .adaptacoes{
   line-height:1.7;
+  color:#222;
   font-size:15px;
 }
 
+/* ================= VAZIO ================= */
 .vazio{
   text-align:center;
   padding:40px;
+  color:#333;
   font-weight:600;
 }
 
-/* FOOTER */
+/* ================= FOOTER ================= */
 .footer{
   background:rgba(255,255,255,.6);
   backdrop-filter:blur(12px);
@@ -110,27 +123,39 @@ body{
   padding:18px 10px;
   font-size:14px;
 }
+
+.footer strong{ color:var(--azul) }
+
+.footer span{
+  display:block;
+  font-size:13px;
+  color:#666;
+  margin-top:5px;
+}
 </style>
 </head>
 
 <body>
 
+<!-- ================= TOPO ================= -->
 <div class="header">
-  <img src="./amg/logo.png" alt="Pinheirinho Celulares">
+  <img src="./img/logo.png" alt="Pinheirinho Celulares">
   <div class="search">
     <input id="busca" placeholder="Digite o modelo do celular ou da película">
   </div>
 </div>
 
+<!-- ================= RESULTADOS ================= -->
 <div class="container" id="resultado"></div>
 
+<!-- ================= RODAPÉ ================= -->
 <div class="footer">
   Desenvolvido por <strong>Mattheus Avilar</strong>
   <span>Versão 1.5 • Base não final</span>
 </div>
 
 <script>
-// ===== NORMALIZA TEXTO =====
+// ================= NORMALIZAÇÃO =================
 function normalizar(txt){
   return txt
     .toLowerCase()
@@ -140,8 +165,6 @@ function normalizar(txt){
 
 const busca = document.getElementById("busca");
 const resultado = document.getElementById("resultado");
-
-// ===== BASE DE DADOS (CONTINUA COM SAMSUNG) =====
 const dados = [
 
 /* ================= SAMSUNG ================= */
@@ -295,54 +318,41 @@ const dados = [
 
 ];
 
-// ================= RENDERIZAÇÃO =================
-const resultado = document.getElementById("resultado");
-const busca = document.getElementById("busca");
-
+// ================= RENDER =================
 function render(filtro=""){
-  resultado.innerHTML="";
   const f = normalizar(filtro);
 
-  const encontrados = dados.filter(d=>{
-    const texto = normalizar(
-      d.marca+" "+d.modelo+" "+d.adaptacoes.join(" ")
-    );
-    return texto.includes(f);
-  });
+  const encontrados = dados.filter(d =>
+    normalizar(
+      d.marca + " " +
+      d.modelo + " " +
+      (d.adaptacoes ? d.adaptacoes.join(" ") : "")
+    ).includes(f)
+  );
 
-  if(encontrados.length===0){
-    resultado.innerHTML="<div class='vazio'>Nenhum modelo encontrado.</div>";
+  if(!encontrados.length){
+    resultado.innerHTML =
+      `<div class="vazio">Nenhum modelo encontrado.</div>`;
     return;
   }
 
-  encontrados.forEach(d=>{
-    const card = document.createElement("div");
-    card.className="card";
-    card.innerHTML=`
+  resultado.innerHTML = encontrados.map(d => `
+    <div class="card">
       <div class="modelo">${d.modelo}</div>
       <div class="marca">${d.marca}</div>
       <div class="adaptacoes">
         <strong>Compatível com:</strong><br>
-        ${d.adaptacoes.join(", ")}
+        ${d.adaptacoes && d.adaptacoes.length
+          ? d.adaptacoes.join(", ")
+          : "Sem adaptações cadastradas"}
       </div>
-    `;
-    resultado.appendChild(card);
-  });
+    </div>
+  `).join("");
 }
 
-// ========= EVENTOS =========
-busca.addEventListener("input", () => {
-  render(busca.value);
-});
-
-// ========= RENDER INICIAL =========
+busca.addEventListener("input", e => render(e.target.value));
 render();
 </script>
 
 </body>
 </html>
-
-
-
-
-
