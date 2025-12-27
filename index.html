@@ -7,26 +7,28 @@
 
 <style>
 :root{
-  --azul:#0d3bff;
-  --laranja:#ff6a00;
+  --azul:#0d3bff;      /* Azul mais vivo */
+  --laranja:#ff6a00;   /* Laranja mais forte */
 }
 
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+}
 
 body{
   margin:0;
   font-family:Segoe UI, Arial, sans-serif;
   background:linear-gradient(
     135deg,
-    rgba(219,231,255,.9),
-    rgba(238,243,255,.9),
-    rgba(255,241,228,.9),
-    rgba(255,210,168,.9)
+    rgba(219,231,255,.85),
+    rgba(238,243,255,.85),
+    rgba(255,241,228,.85),
+    rgba(255,210,168,.85)
   );
   background-attachment:fixed;
 }
 
-/* HEADER */
+/* ================= HEADER ================= */
 .header{
   text-align:center;
   padding:40px 15px 30px;
@@ -37,7 +39,7 @@ body{
   margin-bottom:25px;
 }
 
-/* SEARCH */
+/* ================= SEARCH ================= */
 .search{
   display:flex;
   justify-content:center;
@@ -51,17 +53,18 @@ body{
   border-radius:50px;
   border:3px solid var(--azul);
   outline:none;
-  background:rgba(255,255,255,.75);
-  backdrop-filter:blur(8px);
-  box-shadow:0 16px 35px rgba(0,0,0,.25);
+  background:rgba(255,255,255,.78);
+  backdrop-filter:blur(10px);
+  box-shadow:0 18px 40px rgba(0,0,0,.25);
+  transition:.25s;
 }
 
 .search input:focus{
   border-color:var(--laranja);
-  box-shadow:0 18px 40px rgba(255,106,0,.35);
+  box-shadow:0 20px 45px rgba(255,106,0,.4);
 }
 
-/* RESULTS */
+/* ================= RESULTS ================= */
 .container{
   max-width:1250px;
   margin:auto;
@@ -69,15 +72,22 @@ body{
 }
 
 .card{
-  background:rgba(255,255,255,.72);
-  backdrop-filter:blur(10px);
-  border-radius:20px;
+  background:rgba(255,255,255,.75);
+  backdrop-filter:blur(12px);
+  border-radius:22px;
   padding:22px;
   margin-bottom:18px;
-  box-shadow:0 18px 40px rgba(0,0,0,.25);
+  box-shadow:0 20px 45px rgba(0,0,0,.25);
   border-left:9px solid var(--azul);
+  transition:.25s;
 }
 
+.card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 24px 55px rgba(0,0,0,.28);
+}
+
+/* ================= TEXT ================= */
 .modelo{
   font-size:20px;
   font-weight:800;
@@ -87,75 +97,43 @@ body{
 .marca{
   font-size:14px;
   color:#555;
-  margin:6px 0 12px;
+  margin:6px 0 10px;
 }
 
 .adaptacoes{
-  line-height:1.8;
+  line-height:1.7;
   color:#222;
+  font-size:15px;
 }
 
+/* ================= EMPTY ================= */
 .vazio{
   text-align:center;
   padding:40px;
   color:#333;
+  font-weight:600;
 }
 
-/* FOOTER */
+/* ================= FOOTER ================= */
 .footer{
-  background:rgba(255,255,255,.55);
-  backdrop-filter:blur(10px);
+  background:rgba(255,255,255,.6);
+  backdrop-filter:blur(12px);
   border-top:1px solid rgba(0,0,0,.08);
   text-align:center;
   padding:18px 10px;
   font-size:14px;
 }
 
-.footer strong{color:var(--azul)}
+.footer strong{
+  color:var(--azul);
+}
+
 .footer span{
   display:block;
   font-size:13px;
   color:#666;
   margin-top:5px;
 }
-</style>
-</head>
-
-<body>
-
-<div class="header">
-  <img src="./amg/logo.png" alt="Pinheirinho Celulares">
-  <div class="search">
-    <input id="busca" placeholder="Digite o modelo do celular ou da película">
-  </div>
-</div>
-
-<div class="container" id="resultado"></div>
-
-<div class="footer">
-  Desenvolvido por <strong>Mattheus Avilar</strong>
-  <span>Versão 1.5 • Pinheirinho Celulares</span>
-</div>
-
-<script>
-// ========= FUNÇÃO DE NORMALIZAÇÃO =========
-function normalizar(txt){
-  return txt
-    .toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
-    .replace(/[^a-z0-9]/g,"");
-}
-
-  ${d.adaptacoes.length 
-  ? d.adaptacoes.join(", ") 
-  : "Sem adaptações cadastradas"}
-}
-
-resultado.innerHTML = `<div class="marca">${encontrados.length} resultados encontrados</div>`;
-}
-
-// ================= BASE DE DADOS =================
-const dados = [
 
 /* ================= SAMSUNG ================= */
 {marca:"Samsung",modelo:"A01",adaptacoes:["Xiaomi Mi Play"]},
@@ -354,5 +332,6 @@ render();
 
 </body>
 </html>
+
 
 
