@@ -105,6 +105,34 @@ body{
 .footer strong{
   color:var(--azul);
 }
+
+/* ===== CARD HEADER (LOGO + MODELO) ===== */
+.card-header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:10px;
+}
+
+.card-header img{
+  width:36px;
+  height:36px;
+  object-fit:contain;
+}
+
+.card-header .modelo{
+  font-size:20px;
+  font-weight:800;
+  color:var(--azul);
+}
+
+/* ===== ADAPTACOES ===== */
+.adaptacoes strong{
+  display:block;
+  margin-bottom:6px;
+  color:#000;
+}
+
 </style>
 </head>
 
@@ -339,7 +367,7 @@ function render(filtro=""){
 
   const encontrados = dados.filter(d => {
     const modeloPrincipal = normalizar(d.modelo).includes(f);
-    const adaptacao = d.adaptacoes.some(a =>
+    const adaptacao = d.adaptacoes && d.adaptacoes.some(a =>
       normalizar(a).includes(f)
     );
     return modeloPrincipal || adaptacao;
@@ -352,12 +380,19 @@ function render(filtro=""){
 
   resultado.innerHTML = encontrados.map(d => `
     <div class="card">
-      <div class="modelo">${d.modelo}</div>
-      <div class="marca">${d.marca}</div>
-      <div class="adaptacoes">
-        <strong>Compatível com:</strong><br>
-        ${d.adaptacoes.join(", ")}
+
+      <!-- LINHA 1: LOGO + MODELO -->
+      <div class="card-header">
+        <img src="logos/${d.marca.toLowerCase()}.png" alt="${d.marca}">
+        <div class="modelo">${d.modelo}</div>
       </div>
+
+      <!-- LINHA 2 e 3 -->
+      <div class="adaptacoes">
+        <strong>Adaptação compatível:</strong>
+        ${d.adaptacoes.length ? d.adaptacoes.join(", ") : "Sem adaptações cadastradas"}
+      </div>
+
     </div>
   `).join("");
 }
@@ -367,5 +402,3 @@ busca.addEventListener("input", e => render(e.target.value));
 
 </body>
 </html>
-
-
