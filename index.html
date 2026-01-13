@@ -175,17 +175,28 @@ const resultado = document.getElementById("resultado");
 const dados = [
 
 /* ================= SAMSUNG ================= */
+{marca:"Samsung",modelo:"A2 Core",adaptacoes:["Sem Adaptação"]},
+{marca:"Samsung",modelo:"A6 2018",adaptacoes:["Sem Adaptação"]},
+{marca:"Samsung",modelo:"A6 Plus",adaptacoes:["Sem Adaptação"]},
+{marca:"Samsung",modelo:"A7 2017",adaptacoes:["Sem Adaptação"]},
+{marca:"Samsung",modelo:"A7 2018",adaptacoes:["Sem Adaptação"]},
+{marca:"Samsung",modelo:"A8 2018",adaptacoes:["Sem Adaptação"]},
+{marca:"Samsung",modelo:"A8 Plus",adaptacoes:["Sem Adaptação"]},
+{marca:"Samsung",modelo:"A9 2018",adaptacoes:["Sem Adaptação"]},
 {marca:"Samsung",modelo:"A01",adaptacoes:["Xiaomi Mi Play"]},
+{marca:"Samsung",modelo:"A01 Core",adaptacoes:["Sem Adaptação"]},
 {marca:"Samsung",modelo:"A02",adaptacoes:["Samsung A02S","Samsung A03","Samsung A03S","Samsung A03 Core","Samsung A04","Samsung A04S","Samsung A04E","Samsung A12","Samsung A13","Samsung M23","Samsung A70","Xiaomi 9A","Xiaomi 9A Sport","Xiaomi 9i","Xiaomi 9C","Motorola E7","Motorola E7 Power"]},
 {marca:"Samsung",modelo:"A05",adaptacoes:["Samsung A05S","Xiaomi 13C","Xiaomi C65","TCL 40","Realme C33","Realme Note 50","Realme Note 60"]},
 {marca:"Samsung",modelo:"A05S",adaptacoes:["Samsung A05","Xiaomi 13C","Xiaomi C65","TCL 40","Realme C33","Realme Note 50","Realme Note 60"]},
+{marca:"Samsung",modelo:"A06",adaptacoes:["Samsung A05","Samsung A07","Xiaomi 13C","Xiaomi C65"]},
 {marca:"Samsung",modelo:"A10",adaptacoes:["Samsung A10S","Samsung M10","Motorola G8 Play","Motorola G8 Plus","Motorola G7","LG K40S","Xiaomi Redmi 8","Xiaomi Redmi 8A"]},
 {marca:"Samsung",modelo:"A11",adaptacoes:["Motorola G41","Motorola G51","Motorola G52","Xiaomi Redmi Note 10","Xiaomi Redmi 11 Lite","Xiaomi Redmi Note 9","Realme 7","Realme 7 Pro"]},
 {marca:"Samsung",modelo:"A12",adaptacoes:["Samsung M12","Samsung A02","Samsung A02S","Samsung A03","Samsung A03 Core","Samsung A03S","Samsung A04","Samsung A04E","Samsung A04S","Samsung A13","Samsung A23 5G","Samsung A70","Motorola E7","Motorola E7 Power"]},
 {marca:"Samsung",modelo:"A13",adaptacoes:["Samsung M13","Samsung A12","Samsung M12","Samsung A02","Samsung A02S","Samsung A03","Samsung A03 Core","Samsung A03S","Samsung A04","Samsung A04E","Samsung A04S","Samsung A23","Samsung A70","Motorola E7","Motorola E7 Power"]},
 {marca:"Samsung",modelo:"A14",adaptacoes:["Samsung A22 5G","Samsung M14","Motorola One Fusion","Samsung A16 4G","Samsung A16"]},
 {marca:"Samsung",modelo:"A15",adaptacoes:["Samsung M15","Samsung M24","Samsung M25","Samsung A34 5G"]},
-{marca:"Samsung",modelo:"A16",adaptacoes:["Samsung A14 4G","Samsung A17","Samsung A26,"]},
+{marca:"Samsung",modelo:"A16",adaptacoes:["Samsung A14","Samsung A17","Samsung A26"]},
+{marca:"Samsung",modelo:"A17",adaptacoes:["Samsung A16","Samsung A26","Samsung A14"]},
 {marca:"Samsung",modelo:"A20",adaptacoes:["Samsung A30","Samsung A50","Samsung A30S","Samsung A50S","Samsung M31","Samsung M30S"]},
 {marca:"Samsung",modelo:"A20S",adaptacoes:["Samsung A32 5G","Motorola One Fusion"]},
 {marca:"Samsung",modelo:"A21",adaptacoes:["Samsung A21S","Samsung A71","Motorola G22","Xiaomi Redmi Note 11","Xiaomi Poco X3"]},
@@ -195,9 +206,12 @@ const dados = [
 {marca:"Samsung",modelo:"A24",adaptacoes:["Apple iPhone 15 Pro Max","Samsung A25","Samsung A15","Samsung M15"]},
 {marca:"Samsung",modelo:"A25",adaptacoes:["Apple iPhone 15 Pro Max","Samsung A24","Samsung A15","Samsung M15"]},
 {marca:"Samsung",modelo:"A26",adaptacoes:["Samsung A14 4G","Samsung A16","Samsung A17,"]},
+{marca:"Samsung",modelo:"A32 5G",adaptacoes:["Sem Adaptação"]},
 {marca:"Samsung",modelo:"A33",adaptacoes:["Samsung M21S","Samsung M31","Samsung M22","Samsung M32","Samsung A31","Samsung A32 4G"]},
 {marca:"Samsung",modelo:"A34",adaptacoes:["Apple iPhone 14 Pro Max","Samsung M34","Samsung M15"]},
 {marca:"Samsung",modelo:"A35",adaptacoes:["Samsung A55 5G","Samsung M35"]},
+{marca:"Samsung",modelo:"A36",adaptacoes:[""Samsung A56","Samsung S24 FE"]},
+{marca:"Samsung",modelo:"A41",adaptacoes:["Sem Adaptação"]},
 {marca:"Samsung",modelo:"A50",adaptacoes:["Samsung A20","Samsung A30","Samsung A50S","Samsung A30S"]},
 {marca:"Samsung",modelo:"A51",adaptacoes:["Samsung A52","Samsung A52S","Samsung A53 5G","Samsung S20 FE"]},
 {marca:"Samsung",modelo:"A53",adaptacoes:["Samsung A52S","Samsung S20 FE","Motorola Edge 30","Xiaomi Poco M4 Pro 4G"]},
@@ -351,7 +365,7 @@ const dados = [
 {marca:"Realme",modelo:"7",adaptacoes:[]},
 {marca:"Realme",modelo:"8",adaptacoes:[]},
 {marca:"Realme",modelo:"C35",adaptacoes:["Moto G8 Power Lite","Samsung A12"]},
-{marca:"Realme",modelo:"C55",adaptacoes:["Motorola G","Samsung 5G"]},
+{marca:"Realme",modelo:"C55",adaptacoes:["Motorola G"]},
 {marca:"Realme",modelo:"Note 50",adaptacoes:["Samsung A05","Redmi 13C"]},
 
 /* ================= Asus ================= */
@@ -370,6 +384,9 @@ const dados = [
 
 /* ================= Oscal ================= */
 {marca:"Oscar",modelo:"C80",adaptacoes:["Moto G8 Power Lite"]},
+
+/* ================= Lg ================= */
+{marca:"Lg",modelo:"K11",adaptacoes:["Sem Adaptação"]},
 
 ];
 
@@ -449,4 +466,5 @@ busca.addEventListener("input", e => render(e.target.value));
 </script>
 </body>
 </html>
+
 
