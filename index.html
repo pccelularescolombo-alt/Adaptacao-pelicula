@@ -59,7 +59,7 @@ body{
 .container{
   max-width:1250px;
   margin:auto;
-  padding:20px 15px 80px;
+  padding:20px 15px 140px;
 }
 
 .card{
@@ -95,11 +95,19 @@ body{
 }
 
 .footer{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  z-index:1000;
+
   text-align:center;
-  padding:18px 10px;
+  padding:14px 10px;
   font-size:14px;
-  background:rgba(255,255,255,.6);
+  background:rgba(255,255,255,.75);
+  backdrop-filter:blur(10px);
   border-top:1px solid rgba(0,0,0,.1);
+  box-shadow:0 -6px 20px rgba(0,0,0,.1);
 }
 
 .footer strong{
@@ -467,3 +475,4 @@ busca.addEventListener("input", e => render(e.target.value));
 </script>
 </body>
 </html>
+
