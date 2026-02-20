@@ -553,10 +553,6 @@ function normalizar(txt) {
 const busca = document.getElementById("busca");
 const resultado = document.getElementById("resultado");
 
-/* =================================================
-  👉 COLE TODOS OS MODELOS AQUI
-  (Samsung, Motorola, Xiaomi, etc.)
-================================================== */
 const dados = [
 
 /* ================= SAMSUNG ================= */
@@ -688,6 +684,7 @@ const dados = [
 {marca:"Motorola",modelo:"Moto E22",adaptacoes:["Sem Adaptação"]},
 {marca:"Motorola",modelo:"Moto E32",adaptacoes:["Motorola G22","Motorola Edge 20"]},
 {marca:"Motorola",modelo:"Moto E40",adaptacoes:["Sem Adaptação"]},
+{marca:"Motorola",modelo:"Moto G 5G",adaptacoes:["Sem Adaptação"]},
 {marca:"Motorola",modelo:"Moto G 5G PLus",adaptacoes:["Motorola G100"]},
 {marca:"Motorola",modelo:"Moto G04/G24",adaptacoes:["Motorola G34","Motorola E14"]},
 {marca:"Motorola",modelo:"Moto G5",adaptacoes:["Sem Adaptação"]},
@@ -813,17 +810,31 @@ const dados = [
 {marca:"Xiaomi",modelo:"14T",adaptacoes:["Xiaomi 12T"]},
 
 /* ================= APPLE ================= */
-{marca:"Apple",modelo:"iPhone 7",adaptacoes:["iPhone 8","iPhone SE"]},
-{marca:"Apple",modelo:"iPhone 7 Plus",adaptacoes:["iPhone 8 Plus"]},
-{marca:"Apple",modelo:"iPhone X",adaptacoes:["iPhone 8","iPhone XS","iPhone 11 Pro"]},
-{marca:"Apple",modelo:"iPhone XR",adaptacoes:["iPhone 11"]},
-{marca:"Apple",modelo:"iPhone 12",adaptacoes:["iPhone 12 Pro"]},
-{marca:"Apple",modelo:"iPhone 13",adaptacoes:["iPhone 13 Pro","iPhone 14","iPhone 16E"]},
+{marca:"Apple",modelo:"iPhone 5/SE 1ºG",adaptacoes:["Sem Adaptação"]},
+{marca:"Apple",modelo:"iPhone 6/6S",adaptacoes:["Sem Adaptação"]},
+{marca:"Apple",modelo:"iPhone 6 Plus",adaptacoes:["Sem Adaptação"]},
+{marca:"Apple",modelo:"iPhone 7/8",adaptacoes:["iPhone SE 2ºG"]},
+{marca:"Apple",modelo:"iPhone 7 Plus/8 Plus",adaptacoes:["Sem Adaptação"]}
+{marca:"Apple",modelo:"iPhone X",adaptacoes:["iPhone XS","iPhone 11 Pro"]},
+{marca:"Apple",modelo:"iPhone XS Max",adaptacoes:["iPhone 11 Pro Max"]},
+{marca:"Apple",modelo:"iPhone XR/11",adaptacoes:["Sem Adaptação"]},
+{marca:"Apple",modelo:"iPhone 12/12 Pro",adaptacoes:["Sem Adaptação"]},
+{marca:"Apple",modelo:"iPhone 13/13 Pro",adaptacoes:["iPhone 14","iPhone 16E"]},
 {marca:"Apple",modelo:"iPhone 13 Pro Max",adaptacoes:["iPhone 14 Plus"]},
-{marca:"Apple",modelo:"iPhone 15",adaptacoes:["iPhone 15 Pro"]},
+{marca:"Apple",modelo:"iPhone 14/14 Pro",adaptacoes:["Sem Adaptação"]},
+{marca:"Apple",modelo:"iPhone 14 Plus",adaptacoes:["iPhone 13 Pro Max"]},
+{marca:"Apple",modelo:"iPhone 14 Pro Max",adaptacoes:["Sem Adaptação"]},
+{marca:"Apple",modelo:"iPhone 15/15 Pro",adaptacoes:["Sem Adaptação"]},
 {marca:"Apple",modelo:"iPhone 15 Pro Max",adaptacoes:["iPhone 15 Plus","iPhone 16 Plus"]},
-{marca:"Apple",modelo:"iPhone 16E",adaptacoes:["iPhone 13","iPhone 13 Pro","iPhone 14"]},
+{marca:"Apple",modelo:"iPhone 16",adaptacoes:["Sem Adaptação"]},
+{marca:"Apple",modelo:"iPhone 16 Pro",adaptacoes:["iPhone 17"]},
 {marca:"Apple",modelo:"iPhone 16 Plus",adaptacoes:["iPhone 15 Plus","iPhone 15 Pro Max"]},
+{marca:"Apple",modelo:"iPhone 16 Pro Max",adaptacoes:["iPhone 17 Pro Max"]},
+{marca:"Apple",modelo:"iPhone 16E",adaptacoes:["iPhone 13","iPhone 13 Pro","iPhone 14"]},
+{marca:"Apple",modelo:"iPhone 17",adaptacoes:["iPhone 16 Pro"]},
+{marca:"Apple",modelo:"iPhone 17 Pro",adaptacoes:["Sem Adaptação"]},
+{marca:"Apple",modelo:"iPhone 17 Pro Max",adaptacoes:["iPhone 16 Pro Max"]},
+{marca:"Apple",modelo:"iPhone 17 Air",adaptacoes:["Sem Adaptação"]},
 
 /* ================= INFINIX ================= */
 {marca:"Infinix",modelo:"Smart 7",adaptacoes:["Samsung A03","Samsung A04","Moto E7","Moto G9"]},
@@ -843,14 +854,14 @@ const dados = [
 {marca:"Infinix",modelo:"Note 60i",adaptacoes:["Moto G15"]},
 
 /* ================= Realme ================= */
-{marca:"Realme",modelo:"7",adaptacoes:[]},
-{marca:"Realme",modelo:"8",adaptacoes:[]},
+{marca:"Realme",modelo:"7",adaptacoes:["Sem Adaptação"]},
+{marca:"Realme",modelo:"8",adaptacoes:["Sem Adaptação"]},
 {marca:"Realme",modelo:"C35",adaptacoes:["Moto G8 Power Lite","Samsung A12"]},
 {marca:"Realme",modelo:"C55",adaptacoes:["Motorola G"]},
 {marca:"Realme",modelo:"Note 50",adaptacoes:["Samsung A05","Redmi 13C"]},
 
 /* ================= Asus ================= */
-{marca:"Asus",modelo:"Zenfone Max Shot",adaptacoes:[]},
+{marca:"Asus",modelo:"Zenfone Max Shot",adaptacoes:["Sem Adaptação"]},
 {marca:"Asus",modelo:"Zenfone 6",adaptacoes:["Samsung A51","Samsung S21 FE"]},
 
 /* ================= Nokia ================= */
@@ -960,6 +971,7 @@ busca.addEventListener("input", e => render(e.target.value));
 </script>
 </body>
 </html>
+
 
 
 
