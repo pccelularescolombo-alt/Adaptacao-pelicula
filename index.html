@@ -618,7 +618,7 @@ const dados = [
 {marca:"Samsung",modelo:"A71",adaptacoes:["Samsung A21","Samsung A21S","Motorola G22","Xiaomi Redmi Note 11","Xiaomi Poco X3","Samsung M62"]},
 {marca:"Samsung",modelo:"A72",adaptacoes:["Samsung A52","Samsung A52S","Samsung S20 FE"]},
 {marca:"Samsung",modelo:"A73",adaptacoes:["Samsung A53","Samsung A54","Samsung S21 FE"]},
-{marca:"Samsung",modelo:"A80",adaptacoes:["Motorola G100","Infinix Note 12 Pro 5G"]},
+{marca:"Samsung",modelo:"A80",adaptacoes:["Infinix Note 12 Pro 5G"]},
 {marca:"Samsung",modelo:"M12",adaptacoes:["Samsung A12","Samsung A02","Samsung A02S","Samsung A03","Samsung A03S","Samsung A04","Samsung A04S","Samsung A13"]},
 {marca:"Samsung",modelo:"M13",adaptacoes:["Samsung A13","Samsung A12","Samsung A04","Samsung A04S"]},
 {marca:"Samsung",modelo:"M14",adaptacoes:["Samsung A14","Samsung A22 5G"]},
@@ -736,7 +736,7 @@ const dados = [
 {marca:"Motorola",modelo:"Moto G82",adaptacoes:["Motorola G52","Motorola G84 5G"]},
 {marca:"Motorola",modelo:"Moto G84",adaptacoes:["Motorola G54","Motorola G14"]},
 {marca:"Motorola",modelo:"Moto G86",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto G100",adaptacoes:["Motorola G40 Fusion","Motorola Edge 20","Samsung A80","Samsung A70"]},
+{marca:"Motorola",modelo:"Moto G100",adaptacoes:["Sem Adaptação"]},
 {marca:"Motorola",modelo:"Moto G200",adaptacoes:["Sem Adaptação"]},
 {marca:"Motorola",modelo:"Moto Edge 20",adaptacoes:["Motorola Edge 30X","Motorola Edge 30 Pro","Motorola Edge 20 Lite"]},
 {marca:"Motorola",modelo:"Moto Edge 20 Pro",adaptacoes:["Sem Adaptação"]},
@@ -893,9 +893,10 @@ const dados = [
   
 ];
 
-/* ========= RENDER (MODELO + ADAPTAÇÕES) ========= */
+/* ========= RENDER (MODELO + RELACIONADOS) ========= */
 function render(filtro = "") {
   const f = normalizar(filtro);
+  resultado.innerHTML = "";
 
   if (!f) {
     resultado.innerHTML = `
@@ -906,43 +907,46 @@ function render(filtro = "") {
     return;
   }
 
-  /* ===== 1️⃣ BUSCA POR FABRICANTE ===== */
-  const porMarca = dados.filter(d =>
-    normalizar(d.marca).includes(f)
-  );
+  const principais = [];
+  const relacionados = [];
 
-  if (porMarca.length) {
-    mostrarResultados(porMarca);
+  dados.forEach(d => {
+    const modelo = normalizar(d.modelo);
+    const marca = normalizar(d.marca);
+
+    // 1️⃣ Modelo ou marca digitada
+    if (modelo.includes(f) || marca.includes(f)) {
+      principais.push(d);
+      return;
+    }
+
+    // 2️⃣ Aparece nas adaptações
+    if (
+      d.adaptacoes &&
+      d.adaptacoes.some(a => normalizar(a).includes(f))
+    ) {
+      relacionados.push(d);
+    }
+  });
+
+  if (!principais.length && !relacionados.length) {
+    resultado.innerHTML = `
+      <div class="vazio">
+        <i class="fas fa-search"></i>
+        <p>Nenhuma compatibilidade encontrada para "<strong>${filtro}</strong>".</p>
+      </div>`;
     return;
   }
 
-  /* ===== 2️⃣ BUSCA POR MODELO PRINCIPAL ===== */
-  const porModelo = dados.filter(d =>
-    normalizar(d.modelo).includes(f)
-  );
-
-  if (porModelo.length) {
-    mostrarResultados(porModelo);
-    return;
+  if (principais.length) {
+    resultado.innerHTML += `<h3 style="margin:20px 0 10px">🔎 Modelo pesquisado</h3>`;
+    mostrarResultados(principais);
   }
 
-  /* ===== 3️⃣ BUSCA POR ADAPTAÇÃO (FALLBACK) ===== */
-  const porAdaptacao = dados.filter(d =>
-    d.adaptacoes &&
-    d.adaptacoes.some(a => normalizar(a).includes(f))
-  );
-
-  if (porAdaptacao.length) {
-    mostrarResultados(porAdaptacao);
-    return;
+  if (relacionados.length) {
+    resultado.innerHTML += `<h3 style="margin:30px 0 10px">🔁 Modelos relacionados</h3>`;
+    mostrarResultados(relacionados);
   }
-
-  /* ===== NADA ENCONTRADO ===== */
-  resultado.innerHTML = `
-    <div class="vazio">
-      <i class="fas fa-search"></i>
-      <p>Nenhuma compatibilidade encontrada para "<strong>${filtro}</strong>".</p>
-    </div>`;
 }
 
 /* ===== FUNÇÃO DE RENDERIZAÇÃO ===== */
@@ -981,4 +985,3 @@ render();
 busca.addEventListener("input", e => render(e.target.value));
 </script>
 </body>
-</html>
