@@ -893,60 +893,59 @@ const dados = [
   
 ];
 
-/* ========= RENDER (MODELO + RELACIONADOS) ========= */
+/* ========= RENDER COM PRIORIDADE ========= */
 function render(filtro = "") {
   const f = normalizar(filtro);
-  resultado.innerHTML = "";
 
   if (!f) {
     resultado.innerHTML = `
       <div class="vazio">
         <i class="fas fa-mobile-alt"></i>
-        <p>Digite o modelo ou fabricante para buscar compatibilidade de películas.</p>
+        <p>Digite o fabricante, modelo ou adaptação para buscar compatibilidade.</p>
       </div>`;
     return;
   }
 
-  const principais = [];
-  const relacionados = [];
+  /* 1️⃣ PRIORIDADE: FABRICANTE */
+  const porFabricante = dados.filter(d =>
+    normalizar(d.marca).includes(f)
+  );
 
-  dados.forEach(d => {
-    const modelo = normalizar(d.modelo);
-    const marca = normalizar(d.marca);
-
-    // 1️⃣ Modelo ou marca digitada
-    if (modelo.includes(f) || marca.includes(f)) {
-      principais.push(d);
-      return;
-    }
-
-    // 2️⃣ Aparece nas adaptações
-    if (
-      d.adaptacoes &&
-      d.adaptacoes.some(a => normalizar(a).includes(f))
-    ) {
-      relacionados.push(d);
-    }
-  });
-
-  if (!principais.length && !relacionados.length) {
-    resultado.innerHTML = `
-      <div class="vazio">
-        <i class="fas fa-search"></i>
-        <p>Nenhuma compatibilidade encontrada para "<strong>${filtro}</strong>".</p>
-      </div>`;
+  if (porFabricante.length) {
+    resultado.innerHTML = `<h3 style="margin:20px 0 10px">🏷️ Fabricante</h3>`;
+    mostrarResultados(porFabricante);
     return;
   }
 
-  if (principais.length) {
-    resultado.innerHTML += `<h3 style="margin:20px 0 10px">🔎 Modelo pesquisado</h3>`;
-    mostrarResultados(principais);
+  /* 2️⃣ PRIORIDADE: MODELO */
+  const porModelo = dados.filter(d =>
+    normalizar(d.modelo).includes(f)
+  );
+
+  if (porModelo.length) {
+    resultado.innerHTML = `<h3 style="margin:20px 0 10px">📱 Modelo</h3>`;
+    mostrarResultados(porModelo);
+    return;
   }
 
-  if (relacionados.length) {
-    resultado.innerHTML += `<h3 style="margin:30px 0 10px">🔁 Modelos relacionados</h3>`;
-    mostrarResultados(relacionados);
+  /* 3️⃣ PRIORIDADE: ADAPTAÇÕES POSSÍVEIS */
+  const porAdaptacao = dados.filter(d =>
+    d.adaptacoes &&
+    d.adaptacoes.some(a => normalizar(a).includes(f))
+  );
+
+  if (porAdaptacao.length) {
+    resultado.innerHTML = `<h3 style="margin:20px 0 10px">🔁 Possível adaptação</h3>`;
+    mostrarResultados(porAdaptacao);
+    return;
   }
+
+  /* ❌ NADA ENCONTRADO */
+  resultado.innerHTML = `
+    <div class="vazio">
+      <i class="fas fa-search"></i>
+      <p>Nenhum resultado encontrado para "<strong>${filtro}</strong>".</p>
+    </div>`;
 }
 
 /* ===== FUNÇÃO DE RENDERIZAÇÃO ===== */
