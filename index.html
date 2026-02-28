@@ -4,555 +4,182 @@
 <meta charset="UTF-8">
 <title>Pesquisa de Películas • Pinheirinho Celulares</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
-:root {
-  --azul: #0d3bff;
-  --azul-hover: #0a2fd9;
-  --laranja: #ff6a00;
-  --laranja-hover: #e55f00;
-  
-  /* Light Mode */
-  --bg-primary: #f0f4ff;
-  --bg-secondary: #e8eeff;
-  --bg-gradient-1: rgba(219, 231, 255, 0.9);
-  --bg-gradient-2: rgba(238, 243, 255, 0.9);
-  --bg-gradient-3: rgba(255, 241, 228, 0.9);
-  --bg-gradient-4: rgba(255, 220, 190, 0.9);
-  
-  --glass-bg: rgba(255, 255, 255, 0.65);
-  --glass-border: rgba(255, 255, 255, 0.4);
-  --glass-shadow: rgba(0, 0, 0, 0.08);
-  
-  --text-primary: #1a1a2e;
-  --text-secondary: #4a4a6a;
-  --text-muted: #6b7280;
-  
-  --card-bg: rgba(255, 255, 255, 0.7);
-  --card-border: rgba(255, 255, 255, 0.5);
-  --card-shadow: rgba(13, 59, 255, 0.08);
-  
-  --input-bg: rgba(255, 255, 255, 0.85);
-  --footer-bg: rgba(255, 255, 255, 0.8);
+:root{
+  --azul:#0d3bff;
+  --laranja:#ff6a00;
 }
 
-[data-theme="dark"] {
-  --bg-primary: #0a0a1a;
-  --bg-secondary: #12122a;
-  --bg-gradient-1: rgba(13, 59, 255, 0.15);
-  --bg-gradient-2: rgba(20, 20, 50, 0.95);
-  --bg-gradient-3: rgba(255, 106, 0, 0.1);
-  --bg-gradient-4: rgba(30, 30, 60, 0.95);
-  
-  --glass-bg: rgba(30, 30, 60, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: rgba(0, 0, 0, 0.3);
-  
-  --text-primary: #f0f4ff;
-  --text-secondary: #b8c4e0;
-  --text-muted: #8892a8;
-  
-  --card-bg: rgba(25, 25, 55, 0.7);
-  --card-border: rgba(255, 255, 255, 0.08);
-  --card-shadow: rgba(13, 59, 255, 0.15);
-  
-  --input-bg: rgba(30, 30, 60, 0.8);
-  --footer-bg: rgba(15, 15, 35, 0.9);
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+body{
+  font-family:Segoe UI, Arial, sans-serif;
+  background:linear-gradient(
+    135deg,
+    rgba(219,231,255,.85),
+    rgba(238,243,255,.85),
+    rgba(255,241,228,.85),
+    rgba(255,210,168,.85)
+  );
+  background-attachment:fixed;
 }
 
-body {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3), var(--bg-gradient-4));
-  background-attachment: fixed;
-  min-height: 100vh;
-  color: var(--text-primary);
-  transition: background 0.4s ease, color 0.3s ease;
+.header{
+  text-align:center;
+  padding:40px 15px 30px;
 }
 
-/* ===== THEME TOGGLE ===== */
-.theme-toggle {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1001;
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  border-radius: 50px;
-  padding: 10px;
-  cursor: pointer;
-  box-shadow: 0 8px 32px var(--glass-shadow);
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.logo{
+  max-width:280px;
+  margin-bottom:25px;
 }
 
-.theme-toggle:hover {
-  transform: scale(1.05);
-  box-shadow: 0 12px 40px var(--glass-shadow);
+.search{
+  display:flex;
+  justify-content:center;
 }
 
-.theme-toggle i {
-  font-size: 18px;
-  color: var(--laranja);
-  transition: transform 0.3s ease;
+.search input{
+  width:100%;
+  max-width:620px;
+  padding:18px 26px;
+  font-size:16px;
+  border-radius:50px;
+  border:3px solid var(--azul);
+  outline:none;
+  background:rgba(255,255,255,.8);
+  box-shadow:0 18px 40px rgba(0,0,0,.25);
 }
 
-[data-theme="dark"] .theme-toggle .fa-sun {
-  display: none;
+.container{
+  max-width:1250px;
+  margin:auto;
+  padding:20px 15px 140px;
 }
 
-[data-theme="light"] .theme-toggle .fa-moon,
-:root:not([data-theme]) .theme-toggle .fa-moon {
-  display: none;
+.card{
+  background:rgba(255,255,255,.75);
+  border-radius:22px;
+  padding:22px;
+  margin-bottom:18px;
+  box-shadow:0 20px 45px rgba(0,0,0,.25);
+  border-left:9px solid var(--azul);
 }
 
-/* ===== HEADER ===== */
-.header {
-  text-align: center;
-  padding: 50px 20px 40px;
-  position: relative;
+.modelo{
+  font-size:20px;
+  font-weight:800;
+  color:var(--azul);
 }
 
-.logo-container {
-  display: inline-block;
-  padding: 20px 30px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--glass-border);
-  border-radius: 24px;
-  box-shadow: 0 20px 50px var(--glass-shadow);
-  margin-bottom: 35px;
-  transition: all 0.3s ease;
+.marca{
+  font-size:14px;
+  color:#555;
+  margin:6px 0 10px;
 }
 
-.logo-container:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 25px 60px var(--glass-shadow);
+.adaptacoes{
+  font-size:15px;
+  line-height:1.7;
 }
 
-.logo {
-  max-width: 260px;
-  height: auto;
-  display: block;
+.vazio{
+  text-align:center;
+  padding:40px;
+  font-weight:600;
 }
 
-.search-container {
-  display: flex;
-  justify-content: center;
-  padding: 0 20px;
+.footer{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  z-index:1000;
+
+  text-align:center;
+  padding:14px 10px;
+  font-size:14px;
+  background:rgba(255,255,255,.75);
+  backdrop-filter:blur(10px);
+  border-top:1px solid rgba(0,0,0,.1);
+  box-shadow:0 -6px 20px rgba(0,0,0,.1);
 }
 
-.search-wrapper {
-  position: relative;
-  width: 100%;
-  max-width: 650px;
+.footer strong{
+  color:var(--azul);
 }
 
-.search-wrapper i {
-  position: absolute;
-  left: 28px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--azul);
-  font-size: 20px;
-  pointer-events: none;
-  transition: color 0.3s ease;
+/* ===== CARD HEADER (LOGO + MODELO) ===== */
+.card-header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:10px;
 }
 
-.search-wrapper input {
-  width: 100%;
-  padding: 22px 30px 22px 65px;
-  font-size: 17px;
-  font-family: inherit;
-  font-weight: 500;
-  border-radius: 60px;
-  border: 2px solid transparent;
-  outline: none;
-  background: var(--input-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: 
-    0 20px 50px var(--card-shadow),
-    0 0 0 1px var(--glass-border);
-  color: var(--text-primary);
-  transition: all 0.3s ease;
+.card-header img{
+  width:52px;
+  height:52px;
+  object-fit:contain;
+  background:#fff;
+  padding:6px;
+  border-radius:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,.15);
 }
 
-.search-wrapper input::placeholder {
-  color: var(--text-muted);
-  font-weight: 400;
+.card-header .modelo{
+  font-size:20px;
+  font-weight:800;
+  color:var(--azul);
 }
 
-.search-wrapper input:focus {
-  border-color: var(--azul);
-  box-shadow: 
-    0 25px 60px var(--card-shadow),
-    0 0 0 4px rgba(13, 59, 255, 0.15);
+/* ===== ADAPTACOES ===== */
+.adaptacoes strong{
+  display:block;
+  margin-bottom:6px;
+  color:#000;
 }
 
-.search-wrapper input:focus + i {
-  color: var(--laranja);
-}
-
-/* ===== CONTAINER ===== */
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px 20px 160px;
-}
-
-/* ===== CARDS ===== */
-.card {
-  background: var(--card-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--card-border);
-  border-radius: 20px;
-  padding: 24px 28px;
-  margin-bottom: 16px;
-  box-shadow: 
-    0 15px 40px var(--card-shadow),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.card::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 5px;
-  background: linear-gradient(180deg, var(--azul), var(--laranja));
-  border-radius: 5px 0 0 5px;
-}
-
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 
-    0 25px 60px var(--card-shadow),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.card-header .brand-logo {
-  width: 56px;
-  height: 56px;
-  object-fit: contain;
-  background: var(--glass-bg);
-  padding: 8px;
-  border-radius: 14px;
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 6px 16px var(--glass-shadow);
-  transition: transform 0.3s ease;
-}
-
-.card:hover .brand-logo {
-  transform: scale(1.05);
-}
-
-.card-info {
-  flex: 1;
-}
-
-.modelo {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--azul);
-  letter-spacing: -0.3px;
-  margin-bottom: 4px;
-}
-
-[data-theme="dark"] .modelo {
-  color: #6b8cff;
-}
-
-.marca {
-  font-size: 13px;
-  color: var(--text-muted);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-}
-
-.adaptacoes {
-  background: var(--glass-bg);
-  border-radius: 12px;
-  padding: 16px 18px;
-  border: 1px solid var(--glass-border);
-}
-
-.adaptacoes-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 10px;
-}
-
-.adaptacoes-title i {
-  color: var(--laranja);
-  font-size: 14px;
-}
-
-.adaptacoes-list {
-  font-size: 15px;
-  line-height: 1.8;
-  color: var(--text-primary);
-  font-weight: 500;
-}
-
-.adaptacoes-list .tag {
-  display: inline-block;
-  background: linear-gradient(135deg, rgba(13, 59, 255, 0.1), rgba(255, 106, 0, 0.08));
-  padding: 4px 12px;
-  border-radius: 20px;
-  margin: 3px 4px 3px 0;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-primary);
-  border: 1px solid var(--glass-border);
-  transition: all 0.2s ease;
-}
-
-[data-theme="dark"] .adaptacoes-list .tag {
-  background: linear-gradient(135deg, rgba(13, 59, 255, 0.2), rgba(255, 106, 0, 0.15));
-}
-
-.no-adapt {
-  color: var(--text-muted);
-  font-style: italic;
-}
-
-/* ===== EMPTY STATE ===== */
-.vazio {
-  text-align: center;
-  padding: 60px 30px;
-  background: var(--card-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--card-border);
-  border-radius: 24px;
-  box-shadow: 0 20px 50px var(--card-shadow);
-}
-
-.vazio i {
-  font-size: 48px;
-  color: var(--azul);
-  margin-bottom: 20px;
-  opacity: 0.6;
-}
-
-.vazio p {
-  font-size: 16px;
-  color: var(--text-secondary);
-  font-weight: 500;
-  max-width: 400px;
-  margin: 0 auto;
-  line-height: 1.6;
-}
-
-/* ===== FOOTER ===== */
-.footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000;
-  text-align: center;
-  padding: 18px 20px;
-  font-size: 13px;
-  background: var(--footer-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid var(--glass-border);
-  box-shadow: 0 -10px 40px var(--glass-shadow);
-  color: var(--text-secondary);
-  transition: all 0.3s ease;
-}
-
-.footer-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.footer strong {
-  color: var(--azul);
-  font-weight: 700;
-}
-
-[data-theme="dark"] .footer strong {
-  color: #6b8cff;
-}
-
-.footer .divider {
-  color: var(--text-muted);
-  margin: 0 4px;
-}
-
-.footer .version {
-  background: linear-gradient(135deg, var(--azul), var(--laranja));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-weight: 700;
-}
-
-/* ===== ANIMATIONS ===== */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.card {
-  animation: fadeIn 0.4s ease forwards;
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 600px) {
-  .header {
-    padding: 30px 15px 30px;
-  }
-  
-  .logo-container {
-    padding: 15px 20px;
-  }
-  
-  .logo {
-    max-width: 200px;
-  }
-  
-  .search-wrapper input {
-    padding: 18px 24px 18px 55px;
-    font-size: 15px;
-  }
-  
-  .search-wrapper i {
-    left: 22px;
-    font-size: 18px;
-  }
-  
-  .card {
-    padding: 20px 22px;
-  }
-  
-  .card-header .brand-logo {
-    width: 48px;
-    height: 48px;
-  }
-  
-  .modelo {
-    font-size: 18px;
-  }
-  
-  .theme-toggle {
-    top: 15px;
-    right: 15px;
-    padding: 8px;
-  }
-  
-  .theme-toggle i {
-    font-size: 16px;
-  }
-}
 </style>
 </head>
 
-<body data-theme="light">
-
-<!-- Theme Toggle -->
-<button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">
-  <i class="fas fa-sun"></i>
-  <i class="fas fa-moon"></i>
-</button>
+<body>
 
 <div class="header">
-  <div class="logo-container">
-    <img src="amg/logo.png" alt="Pinheirinho Celulares" class="logo">
-  </div>
-  
-  <div class="search-container">
-    <div class="search-wrapper">
-      <input id="busca" type="text" placeholder="Digite o modelo ou marca do celular..." autocomplete="off">
-      <i class="fas fa-search"></i>
-    </div>
+  <img src="amg/logo.png" alt="Pinheirinho Celulares" class="logo">
+  <div class="search">
+    <input id="busca" placeholder="Digite o modelo do celular">
   </div>
 </div>
 
 <div class="container" id="resultado"></div>
 
 <div class="footer">
-  <div class="footer-content">
-    <span>Desenvolvido por <strong>Mattheus Avilar</strong></span>
-    <span class="divider">•</span>
-    <span class="version">Versão 2.0</span>
-    <span class="divider">•</span>
-    <span>Base não final</span>
-  </div>
+  Desenvolvido por <strong>Mattheus Avilar</strong><br>
+  Versão 2.0 • Base não final
 </div>
 
 <script>
-/* ========= THEME TOGGLE ========= */
-const themeToggle = document.getElementById('themeToggle');
-const body = document.body;
-
-// Check for saved theme preference
-const savedTheme = localStorage.getItem('theme') || 'light';
-body.setAttribute('data-theme', savedTheme);
-
-themeToggle.addEventListener('click', () => {
-  const currentTheme = body.getAttribute('data-theme');
-  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-  body.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
-});
-
 /* ========= NORMALIZA TEXTO ========= */
-function normalizar(txt) {
+function normalizar(txt){
   return txt
     .toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]/g, "");
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/[^a-z0-9]/g,"");
 }
 
 const busca = document.getElementById("busca");
 const resultado = document.getElementById("resultado");
 
+/* =================================================
+  👉 COLE TODOS OS MODELOS AQUI
+  (Samsung, Motorola, Xiaomi, etc.)
+================================================== */
 const dados = [
 
 /* ================= SAMSUNG ================= */
@@ -808,7 +435,7 @@ const dados = [
 {marca:"Xiaomi",modelo:"Redmi Note 9",adaptacoes:["Samsung A11","Samsung A21","Motorola G22","Motorola G31"]},
 {marca:"Xiaomi",modelo:"Redmi Note 9S",adaptacoes:["Samsung A31","Samsung A32","Motorola G40","Motorola G41"]},
 {marca:"Xiaomi",modelo:"Redmi Note 9 Pro",adaptacoes:["Samsung A31","Samsung A32","Motorola G40","Motorola G41"]},
-{marca:"Xiaomi",modelo:"Redmi Note 10",adaptacoes:["Redmi Note 11","Redmi Note 11S","Redmi Note 12"."Samsung A11","Samsung A21","Motorola G22"]},
+{marca:"Xiaomi",modelo:"Redmi Note 10",adaptacoes:["Redmi Note 11","Redmi Note 11S","Redmi Note 12","Samsung A11","Samsung A21","Motorola G22"]},
 {marca:"Xiaomi",modelo:"Redmi Note 10 5G",adaptacoes:["Motorola G13","Motorola G53"]},
 {marca:"Xiaomi",modelo:"Redmi Note 10S",adaptacoes:["Samsung A32","Samsung A33","Motorola G52"]},
 {marca:"Xiaomi",modelo:"Redmi Note 10 Pro",adaptacoes:["Redmi Note 11 Pro","Samsung A52","Samsung A52S","Samsung S20 FE","Motorola G82"]},
@@ -892,101 +519,82 @@ const dados = [
 /* ================= Jovi ================= */
 {marca:"Jovi",modelo:"V2445",adaptacoes:["Morotola G05•G15"]},
 {marca:"Jovi",modelo:"Y29",adaptacoes:["Morotola G56"]},
-  
+
 ];
 
-/* ========= RENDER COM PRIORIDADE ========= */
-function render(filtro = "") {
+/* ========= RENDER (MODELO + ADAPTAÇÕES) ========= */
+function render(filtro=""){
   const f = normalizar(filtro);
 
-  if (!f) {
-    resultado.innerHTML = `
-      <div class="vazio">
-        <i class="fas fa-mobile-alt"></i>
-        <p>Digite o fabricante, modelo ou adaptação para buscar compatibilidade.</p>
-      </div>`;
+  if(!f){
+    resultado.innerHTML = `<div class="vazio">
+      Digite o modelo ou fabricante para buscar compatibilidade.
+    </div>`;
     return;
   }
 
-  /* 1️⃣ PRIORIDADE: FABRICANTE */
-  const porFabricante = dados.filter(d =>
+  /* ===== 1️⃣ BUSCA POR FABRICANTE ===== */
+  const porMarca = dados.filter(d =>
     normalizar(d.marca).includes(f)
   );
 
-  if (porFabricante.length) {
-    resultado.innerHTML = `<h3 style="margin:20px 0 10px">🏷️ Fabricante</h3>`;
-    mostrarResultados(porFabricante);
+  if(porMarca.length){
+    mostrarResultados(porMarca);
     return;
   }
 
-  /* 2️⃣ PRIORIDADE: MODELO */
+  /* ===== 2️⃣ BUSCA POR MODELO PRINCIPAL ===== */
   const porModelo = dados.filter(d =>
     normalizar(d.modelo).includes(f)
   );
 
-  if (porModelo.length) {
-    resultado.innerHTML = `<h3 style="margin:20px 0 10px">📱 Modelo</h3>`;
+  if(porModelo.length){
     mostrarResultados(porModelo);
     return;
   }
 
-  /* 3️⃣ PRIORIDADE: ADAPTAÇÕES POSSÍVEIS */
+  /* ===== 3️⃣ BUSCA POR ADAPTAÇÃO (FALLBACK) ===== */
   const porAdaptacao = dados.filter(d =>
     d.adaptacoes &&
     d.adaptacoes.some(a => normalizar(a).includes(f))
   );
 
-  if (porAdaptacao.length) {
-    resultado.innerHTML = `<h3 style="margin:20px 0 10px">🔁 Possível adaptação</h3>`;
+  if(porAdaptacao.length){
     mostrarResultados(porAdaptacao);
     return;
   }
 
-  /* ❌ NADA ENCONTRADO */
-  resultado.innerHTML = `
-    <div class="vazio">
-      <i class="fas fa-search"></i>
-      <p>Nenhum resultado encontrado para "<strong>${filtro}</strong>".</p>
-    </div>`;
+  /* ===== NADA ENCONTRADO ===== */
+  resultado.innerHTML = `<div class="vazio">
+    Nenhuma compatibilidade encontrada.
+  </div>`;
 }
 
 /* ===== FUNÇÃO DE RENDERIZAÇÃO ===== */
-function mostrarResultados(lista) {
-  resultado.innerHTML = lista.map((d, index) => `
-    <div class="card" style="animation-delay: ${index * 0.05}s">
-      <!-- HEADER -->
+function mostrarResultados(lista){
+  resultado.innerHTML = lista.map(d => `
+    <div class="card">
+
+      <!-- LINHA 1 -->
       <div class="card-header">
-        <img class="brand-logo" src="logos/${d.marca.toLowerCase()}.png" alt="${d.marca}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>📱</text></svg>'">
-        <div class="card-info">
-          <div class="modelo">${d.modelo}</div>
-          <div class="marca">${d.marca}</div>
-        </div>
+        <img src="logos/${d.marca.toLowerCase()}.png" alt="${d.marca}">
+        <div class="modelo">${d.modelo}</div>
       </div>
 
-      <!-- ADAPTAÇÕES -->
+      <!-- LINHA 2 e 3 -->
       <div class="adaptacoes">
-        <div class="adaptacoes-title">
-          <i class="fas fa-exchange-alt"></i>
-          Adaptação compatível
-        </div>
-        <div class="adaptacoes-list">
-          ${d.adaptacoes && d.adaptacoes.length && d.adaptacoes[0] !== "Sem Adaptação"
-            ? d.adaptacoes.map(a => `<span class="tag">${a}</span>`).join('')
-            : '<span class="no-adapt">Sem adaptações compatíveis</span>'}
-        </div>
+        <strong>Adaptação compatível:</strong>
+        ${d.adaptacoes.length
+          ? d.adaptacoes.join(", ")
+          : "Sem adaptações cadastradas"}
       </div>
+
     </div>
   `).join("");
 }
 
-// Initial render
-render();
-
-// Search event listener
 busca.addEventListener("input", e => render(e.target.value));
+
 </script>
 </body>
-
-
-
-
+</html>
