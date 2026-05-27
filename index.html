@@ -2,1296 +2,1126 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Sistema de Películas • Pinheirinho Celulares</title>
+<title>Fechamento de Caixa • Pinheirinho Celulares</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
-:root {
-  --azul: #0d3bff;
-  --azul-hover: #0a2fd9;
-  --laranja: #ff6a00;
-  --laranja-hover: #e55f00;
-  
-  /* Light Mode */
-  --bg-primary: #f0f4ff;
-  --bg-secondary: #e8eeff;
-  --bg-gradient-1: rgba(219, 231, 255, 0.9);
-  --bg-gradient-2: rgba(238, 243, 255, 0.9);
-  --bg-gradient-3: rgba(255, 241, 228, 0.9);
-  --bg-gradient-4: rgba(255, 220, 190, 0.9);
-  
-  --glass-bg: rgba(255, 255, 255, 0.65);
-  --glass-border: rgba(255, 255, 255, 0.4);
-  --glass-shadow: rgba(0, 0, 0, 0.08);
-  
-  --text-primary: #1a1a2e;
-  --text-secondary: #4a4a6a;
-  --text-muted: #6b7280;
-  
-  --card-bg: rgba(255, 255, 255, 0.7);
-  --card-border: rgba(255, 255, 255, 0.5);
-  --card-shadow: rgba(13, 59, 255, 0.08);
-  
-  --input-bg: rgba(255, 255, 255, 0.85);
-  --footer-bg: rgba(255, 255, 255, 0.8);
+:root{
+  --bg-0:#0a0d14;
+  --bg-1:#11151f;
+  --bg-2:#171c2a;
+  --bg-3:#1f2638;
+  --border:#262e44;
+  --border-soft:#1d2336;
+  --text:#e6e9f2;
+  --text-dim:#8a92a8;
+  --text-mute:#5b6378;
+  --azul:#3b6dff;
+  --azul-glow:rgba(59,109,255,.35);
+  --laranja:#ff7a1a;
+  --laranja-glow:rgba(255,122,26,.35);
+  --verde:#22c55e;
+  --verde-glow:rgba(34,197,94,.35);
+  --vermelho:#ef4444;
+  --vermelho-glow:rgba(239,68,68,.4);
+  --amarelo:#facc15;
 }
 
-[data-theme="dark"] {
-  --bg-primary: #0a0a1a;
-  --bg-secondary: #12122a;
-  --bg-gradient-1: rgba(13, 59, 255, 0.15);
-  --bg-gradient-2: rgba(20, 20, 50, 0.95);
-  --bg-gradient-3: rgba(255, 106, 0, 0.1);
-  --bg-gradient-4: rgba(30, 30, 60, 0.95);
-  
-  --glass-bg: rgba(30, 30, 60, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: rgba(0, 0, 0, 0.3);
-  
-  --text-primary: #f0f4ff;
-  --text-secondary: #b8c4e0;
-  --text-muted: #8892a8;
-  
-  --card-bg: rgba(25, 25, 55, 0.7);
-  --card-border: rgba(255, 255, 255, 0.08);
-  --card-shadow: rgba(13, 59, 255, 0.15);
-  
-  --input-bg: rgba(30, 30, 60, 0.8);
-  --footer-bg: rgba(15, 15, 35, 0.9);
+*{box-sizing:border-box}
+html,body{height:100%}
+
+body{
+  margin:0;
+  padding:14px 16px 16px;
+  font-family:"Space Grotesk", "Segoe UI", Arial, sans-serif;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(59,109,255,.10), transparent 60%),
+    radial-gradient(900px 500px at 110% 10%, rgba(255,122,26,.08), transparent 60%),
+    var(--bg-0);
+  color:var(--text);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* subtle grain overlay */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity:.5;
+  mix-blend-mode:overlay;
+  z-index:0;
 }
 
-body {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3), var(--bg-gradient-4));
-  background-attachment: fixed;
-  min-height: 100vh;
-  color: var(--text-primary);
-  transition: background 0.4s ease, color 0.3s ease;
+.wrap{position:relative;z-index:1;max-width:1280px;margin:0 auto;height:calc(100vh - 30px);display:flex;flex-direction:column}
+
+/* ===== HEADER ===== */
+header.topo{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  margin-bottom:10px;
+  padding:8px 14px;
+  background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0));
+  border:1px solid var(--border-soft);
+  border-radius:12px;
+  backdrop-filter:blur(8px);
+  flex-shrink:0;
 }
 
-/* ===== SISTEMA DE ABAS ===== */
-.tabs-container {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  display: flex;
-  justify-content: center;
-  gap: 0;
-  background: linear-gradient(135deg, #0d3bff 0%, #6b8cff 100%);
-  padding: 16px 20px;
-  box-shadow: 0 4px 20px rgba(13, 59, 255, 0.3);
+.brand{display:flex;align-items:center;gap:12px}
+
+.brand .logo-wrap{
+  width:42px;height:42px;
+  border-radius:10px;
+  background:linear-gradient(135deg, var(--azul), #6f3bff 60%, var(--laranja));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 18px var(--azul-glow);
+  overflow:hidden;
+  position:relative;
 }
 
-.tab-button {
-  flex: 1;
-  max-width: 300px;
-  padding: 16px 32px;
-  font-size: 16px;
-  font-weight: 700;
-  border: none;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  color: #ffffff;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+.brand .logo-wrap img{
+  width:100%;height:100%;
+  object-fit:contain;
+  background:#0a0d14;
+  padding:5px;
 }
 
-.tab-button:first-child {
-  border-radius: 50px 0 0 50px;
+.brand .logo-wrap .fallback{
+  font-family:"JetBrains Mono", monospace;
+  font-weight:700;
+  font-size:17px;
+  color:#fff;
+  letter-spacing:-1px;
 }
 
-.tab-button:last-child {
-  border-radius: 0 50px 50px 0;
+.brand h1{
+  margin:0;
+  font-size:16px;
+  font-weight:600;
+  letter-spacing:-.3px;
+  line-height:1.1;
 }
 
-.tab-button:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: translateY(-2px);
+.brand .sub{
+  color:var(--text-dim);
+  font-size:10.5px;
+  font-weight:500;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+  margin-top:2px;
 }
 
-.tab-button.active {
-  background: #ffffff;
-  color: #0d3bff;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+.relogio{
+  display:flex;flex-direction:column;align-items:flex-end;
+  font-family:"JetBrains Mono", monospace;
+}
+.relogio .hora{font-size:18px;font-weight:700;color:var(--text);line-height:1}
+.relogio .data{font-size:10.5px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.4px;margin-top:3px}
+
+/* ===== GRID ===== */
+.grid{
+  display:grid;
+  grid-template-columns:1.15fr 1fr 1fr;
+  gap:12px;
+  flex:1;
+  min-height:0;
 }
 
-.tab-button i {
-  font-size: 18px;
+@media (max-width:980px){
+  .grid{grid-template-columns:1fr}
 }
 
-.tab-content {
-  display: none;
+.card{
+  background:linear-gradient(180deg, var(--bg-2), var(--bg-1));
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:12px 14px;
+  position:relative;
+  overflow:hidden;
+  transition:border-color .2s ease, transform .2s ease;
+  display:flex;
+  flex-direction:column;
+  min-height:0;
 }
 
-.tab-content.active {
-  display: block;
+.card::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:1px;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
 }
 
-/* ===== THEME TOGGLE ===== */
-.theme-toggle {
-  position: fixed;
-  top: 80px;
-  right: 20px;
-  z-index: 1001;
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  border-radius: 50px;
-  padding: 10px;
-  cursor: pointer;
-  box-shadow: 0 8px 32px var(--glass-shadow);
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.card-head{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:8px;
+  padding-bottom:8px;
+  border-bottom:1px dashed var(--border);
+  flex-shrink:0;
 }
 
-.theme-toggle:hover {
-  transform: scale(1.05);
+.card-head .icon{
+  width:28px;height:28px;
+  border-radius:8px;
+  display:grid;place-items:center;
+  font-size:12px;
 }
 
-.theme-toggle i {
-  font-size: 18px;
-  color: var(--laranja);
+.card-head .icon.azul{background:rgba(59,109,255,.12);color:var(--azul);border:1px solid rgba(59,109,255,.25)}
+.card-head .icon.laranja{background:rgba(255,122,26,.12);color:var(--laranja);border:1px solid rgba(255,122,26,.25)}
+.card-head .icon.verde{background:rgba(34,197,94,.12);color:var(--verde);border:1px solid rgba(34,197,94,.25)}
+
+.card-head h2{
+  margin:0;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.3px;
+  text-transform:uppercase;
+  color:var(--text);
 }
 
-[data-theme="dark"] .theme-toggle .fa-sun {
-  display: none;
+.card-head .tag{
+  margin-left:auto;
+  font-size:9.5px;
+  color:var(--text-mute);
+  font-family:"JetBrains Mono", monospace;
+  letter-spacing:.5px;
 }
 
-[data-theme="light"] .theme-toggle .fa-moon {
-  display: none;
+/* ===== TABELA NOTAS ===== */
+.tabela{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  font-size:12px;
+  table-layout:fixed;
 }
 
-/* ===== ABA 1 - PESQUISA ===== */
-.pesquisa-header {
-  text-align: center;
-  padding: 50px 20px 40px;
+.tabela col.c-nota{width:34%}
+.tabela col.c-qtd{width:28%}
+.tabela col.c-sub{width:38%}
+
+.tabela thead th{
+  background:transparent;
+  color:var(--text-mute);
+  font-weight:600;
+  font-size:9.5px;
+  letter-spacing:1.1px;
+  text-transform:uppercase;
+  padding:4px 6px;
+  text-align:left;
+  border-bottom:1px solid var(--border);
 }
 
-.logo-container {
-  display: inline-block;
-  padding: 20px 30px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--glass-border);
-  border-radius: 24px;
-  box-shadow: 0 20px 50px var(--glass-shadow);
-  margin-bottom: 35px;
-  transition: all 0.3s ease;
+.tabela thead th:nth-child(2){text-align:center}
+.tabela thead th:nth-child(3){text-align:right}
+
+.tabela tbody tr{
+  transition:background .15s ease;
+}
+.tabela tbody tr:hover{background:rgba(255,255,255,.02)}
+
+.tabela tbody td{
+  padding:3px 6px;
+  border-bottom:1px solid var(--border-soft);
+  font-family:"JetBrains Mono", monospace;
+  font-size:11.5px;
+  line-height:1.1;
 }
 
-.logo-container:hover {
-  transform: translateY(-4px);
+.tabela tbody td:first-child{
+  color:var(--text-dim);
+  font-weight:500;
 }
 
-.logo {
-  max-width: 260px;
-  height: auto;
-  display: block;
+.tabela tbody td:nth-child(2){text-align:center}
+.tabela tbody td:nth-child(3){
+  text-align:right;
+  color:var(--text);
+  font-weight:600;
 }
 
-.search-container {
-  display: flex;
-  justify-content: center;
-  padding: 0 20px;
+.tabela .qtd-print{display:none}
+
+.tabela input[type="number"]{
+  width:58px;
+  padding:3px 6px;
+  background:var(--bg-3);
+  border:1px solid var(--border);
+  border-radius:6px;
+  color:var(--text);
+  font-family:"JetBrains Mono", monospace;
+  font-size:11.5px;
+  text-align:center;
+  outline:none;
+  transition:border-color .15s, box-shadow .15s;
+}
+.tabela input[type="number"]:focus{
+  border-color:var(--azul);
+  box-shadow:0 0 0 3px var(--azul-glow);
 }
 
-.search-wrapper {
-  position: relative;
-  width: 100%;
-  max-width: 650px;
+.tabela tfoot td{
+  padding:7px 6px;
+  border-top:1px solid var(--border);
+  font-family:"JetBrains Mono", monospace;
+  font-size:13px;
+  font-weight:700;
+}
+.tabela tfoot td:first-child{
+  color:var(--text-dim);
+  font-family:"Space Grotesk", sans-serif;
+  text-transform:uppercase;
+  letter-spacing:1.3px;
+  font-size:10.5px;
+}
+.tabela tfoot td:last-child{
+  text-align:right;
+  color:var(--laranja);
 }
 
-.search-wrapper i {
-  position: absolute;
-  left: 28px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--azul);
-  font-size: 20px;
-  pointer-events: none;
+/* ===== CAMPOS ===== */
+.field{
+  margin-bottom:6px;
+}
+.field label{
+  display:flex;align-items:center;gap:6px;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:1.1px;
+  color:var(--text-mute);
+  margin-bottom:3px;
+  font-weight:600;
+}
+.field label i{font-size:9px;opacity:.7}
+
+.field input{
+  width:100%;
+  padding:7px 10px;
+  background:var(--bg-3);
+  border:1px solid var(--border);
+  border-radius:8px;
+  color:var(--text);
+  font-family:"JetBrains Mono", monospace;
+  font-size:13px;
+  outline:none;
+  transition:border-color .15s, box-shadow .15s, background .15s;
+}
+.field input::placeholder{color:var(--text-mute);font-family:"Space Grotesk", sans-serif;font-size:11.5px}
+.field input:focus{
+  border-color:var(--azul);
+  box-shadow:0 0 0 3px var(--azul-glow);
+  background:#1a2236;
 }
 
-.search-wrapper input {
-  width: 100%;
-  padding: 22px 30px 22px 65px;
-  font-size: 17px;
-  font-family: inherit;
-  font-weight: 500;
-  border-radius: 60px;
-  border: 2px solid transparent;
-  outline: none;
-  background: var(--input-bg);
-  backdrop-filter: blur(16px);
-  box-shadow: 0 20px 50px var(--card-shadow), 0 0 0 1px var(--glass-border);
-  color: var(--text-primary);
-  transition: all 0.3s ease;
+/* ===== RESULTADO ===== */
+.resultado{
+  margin-top:auto;
+  padding:9px 12px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:linear-gradient(180deg, rgba(255,255,255,.02), transparent);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  position:relative;
+  overflow:hidden;
+  transition:all .25s ease;
 }
 
-.search-wrapper input:focus {
-  border-color: var(--azul);
-  box-shadow: 0 25px 60px var(--card-shadow), 0 0 0 4px rgba(13, 59, 255, 0.15);
+.resultado .res-icon{
+  width:32px;height:32px;
+  border-radius:50%;
+  display:grid;place-items:center;
+  font-size:13px;
+  flex-shrink:0;
+  background:var(--bg-3);
+  color:var(--text-dim);
+  border:1px solid var(--border);
+  transition:all .25s ease;
 }
 
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px 20px 160px;
+.resultado .res-text{flex:1;min-width:0}
+.resultado .res-label{
+  font-size:9.5px;
+  text-transform:uppercase;
+  letter-spacing:1.4px;
+  color:var(--text-mute);
+  font-weight:600;
+  margin-bottom:2px;
+}
+.resultado .res-value{
+  font-family:"JetBrains Mono", monospace;
+  font-size:15px;
+  font-weight:700;
+  color:var(--text-dim);
+  letter-spacing:-.3px;
 }
 
-.card {
-  background: var(--card-bg);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--card-border);
-  border-radius: 20px;
-  padding: 24px 28px;
-  margin-bottom: 16px;
-  box-shadow: 0 15px 40px var(--card-shadow);
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  animation: fadeIn 0.4s ease forwards;
+/* Estados */
+.resultado.ok{
+  border-color:rgba(34,197,94,.4);
+  background:linear-gradient(180deg, rgba(34,197,94,.10), rgba(34,197,94,.02));
+}
+.resultado.ok .res-icon{
+  background:rgba(34,197,94,.15);
+  color:var(--verde);
+  border-color:rgba(34,197,94,.4);
+}
+.resultado.ok .res-value{color:var(--verde)}
+
+.resultado.sobra{
+  border-color:rgba(34,197,94,.4);
+  background:linear-gradient(180deg, rgba(34,197,94,.08), rgba(34,197,94,.02));
+  animation:pulseVerde 1.8s ease-in-out infinite;
+}
+.resultado.sobra .res-icon{
+  background:rgba(34,197,94,.18);
+  color:var(--verde);
+  border-color:rgba(34,197,94,.5);
+  animation:bumpIcon 1.8s ease-in-out infinite;
+}
+.resultado.sobra .res-value{color:var(--verde)}
+
+.resultado.falta{
+  border-color:rgba(239,68,68,.5);
+  background:linear-gradient(180deg, rgba(239,68,68,.10), rgba(239,68,68,.02));
+  animation:pulseVermelho 1.4s ease-in-out infinite;
+}
+.resultado.falta .res-icon{
+  background:rgba(239,68,68,.2);
+  color:var(--vermelho);
+  border-color:rgba(239,68,68,.55);
+  animation:bumpIcon 1.4s ease-in-out infinite;
+}
+.resultado.falta .res-value{color:var(--vermelho)}
+
+@keyframes pulseVerde{
+  0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.0)}
+  50%{box-shadow:0 0 0 6px rgba(34,197,94,.18), 0 8px 28px rgba(34,197,94,.12)}
+}
+@keyframes pulseVermelho{
+  0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.0)}
+  50%{box-shadow:0 0 0 6px rgba(239,68,68,.22), 0 8px 28px rgba(239,68,68,.18)}
+}
+@keyframes bumpIcon{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.12)}
 }
 
-.card::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 5px;
-  background: linear-gradient(180deg, var(--azul), var(--laranja));
-  border-radius: 5px 0 0 5px;
+/* ===== RESUMO FINAL ===== */
+.resumo{
+  margin-top:10px;
+  padding:10px 16px;
+  background:linear-gradient(135deg, var(--bg-2), var(--bg-1));
+  border:1px solid var(--border);
+  border-radius:14px;
+  display:grid;
+  grid-template-columns:repeat(4, 1fr) auto;
+  gap:14px;
+  align-items:center;
+  flex-shrink:0;
+}
+@media (max-width:780px){.resumo{grid-template-columns:repeat(2,1fr)}}
+
+.resumo .stat{
+  display:flex;flex-direction:column;gap:2px;
+  padding:2px 10px;
+  border-left:2px solid var(--border);
+}
+.resumo .stat:first-child{border-left:none}
+.resumo .stat .k{
+  font-size:9.5px;
+  text-transform:uppercase;
+  letter-spacing:1.3px;
+  color:var(--text-mute);
+  font-weight:600;
+}
+.resumo .stat .v{
+  font-family:"JetBrains Mono", monospace;
+  font-size:15px;
+  font-weight:700;
+  color:var(--text);
+}
+.resumo .stat.dest .v{color:var(--laranja)}
+
+/* ===== AÇÕES ===== */
+.acoes{
+  display:flex;
+  gap:8px;
+  justify-content:flex-end;
+  flex-wrap:wrap;
 }
 
-.card:hover {
-  transform: translateY(-4px);
+button{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--bg-3);
+  color:var(--text);
+  border:1px solid var(--border);
+  padding:8px 14px;
+  border-radius:9px;
+  font-size:12px;
+  font-weight:600;
+  font-family:"Space Grotesk", sans-serif;
+  letter-spacing:.3px;
+  cursor:pointer;
+  transition:transform .15s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
 }
+button:hover{transform:translateY(-1px);border-color:#3a455f}
+button:active{transform:translateY(0)}
 
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
+button.primary{
+  background:linear-gradient(180deg, var(--azul), #2a52d6);
+  border-color:transparent;
+  box-shadow:0 6px 16px var(--azul-glow);
 }
+button.primary:hover{box-shadow:0 8px 22px var(--azul-glow);border-color:transparent}
 
-.brand-logo {
-  width: 56px;
-  height: 56px;
-  object-fit: contain;
-  background: var(--glass-bg);
-  padding: 8px;
-  border-radius: 14px;
-  border: 1px solid var(--glass-border);
+button.danger{
+  color:#ffb4b4;
 }
-
-.card-info {
-  flex: 1;
-}
-
-.modelo {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--azul);
-  margin-bottom: 4px;
-}
-
-[data-theme="dark"] .modelo {
-  color: #6b8cff;
-}
-
-.marca {
-  font-size: 13px;
-  color: var(--text-muted);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-}
-
-.adaptacoes {
-  background: var(--glass-bg);
-  border-radius: 12px;
-  padding: 16px 18px;
-  border: 1px solid var(--glass-border);
-}
-
-.adaptacoes-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  margin-bottom: 10px;
-}
-
-.adaptacoes-title i {
-  color: var(--laranja);
-}
-
-.adaptacoes-list .tag {
-  display: inline-block;
-  background: linear-gradient(135deg, rgba(13, 59, 255, 0.1), rgba(255, 106, 0, 0.08));
-  padding: 4px 12px;
-  border-radius: 20px;
-  margin: 3px 4px 3px 0;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-primary);
-  border: 1px solid var(--glass-border);
-}
-
-.no-adapt {
-  color: var(--text-muted);
-  font-style: italic;
-}
-
-.vazio {
-  text-align: center;
-  padding: 60px 30px;
-  background: var(--card-bg);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--card-border);
-  border-radius: 24px;
-  box-shadow: 0 20px 50px var(--card-shadow);
-}
-
-.vazio i {
-  font-size: 48px;
-  color: var(--azul);
-  margin-bottom: 20px;
-  opacity: 0.6;
-}
-
-/* ===== ABA 2 - PLACA ===== */
-.placa-container {
-  min-height: calc(100vh - 100px);
-}
-
-.topo-fixo {
-  position: sticky;
-  top: 68px;
-  background: linear-gradient(135deg, rgba(13, 59, 255, 0.95) 0%, rgba(107, 140, 255, 0.95) 100%);
-  backdrop-filter: blur(20px);
-  padding: 30px 20px;
-  text-align: center;
-  border-bottom: 3px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(13, 59, 255, 0.25);
-  z-index: 100;
-}
-
-.topo-fixo h2 {
-  margin: 0 0 25px 0;
-  font-size: 32px;
-  font-weight: 800;
-  color: #ffffff;
-  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-
-.select-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: nowrap;
-  margin-top: 10px;
-}
-
-.select-container select,
-.select-container button {
-  padding: 12px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 12px;
-  border: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.95);
-  color: #1a1a2e;
-  font-family: inherit;
-  white-space: nowrap;
-}
-
-.select-container select {
-  flex: 1;
-  min-width: 150px;
-  max-width: 200px;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%230d3bff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 35px;
-}
-
-.select-container button {
-  flex: 0 0 auto;
-  min-width: 110px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-
-.btn-gerar {
-  background: linear-gradient(135deg, #0051ff 0%, #0d3bff 100%);
-  color: #ffffff;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-.btn-download {
-  background: linear-gradient(135deg, #28a745 0%, #20c05c 100%);
-  color: #ffffff;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-.area-canvas {
-  text-align: center;
-  padding: 50px 20px 80px;
-}
-
-.canvas-wrapper {
-  display: inline-block;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(20px);
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  border-radius: 24px;
-  padding: 20px;
-  box-shadow: 0 20px 60px rgba(13, 59, 255, 0.15);
-}
-
-canvas {
-  max-width: 500px;
-  width: 100%;
-  height: auto;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-  display: block;
-}
+button.danger:hover{color:#fff;background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.4)}
 
 /* ===== FOOTER ===== */
-.footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000;
-  text-align: center;
-  padding: 18px 20px;
-  font-size: 13px;
-  background: var(--footer-bg);
-  backdrop-filter: blur(20px);
-  border-top: 1px solid var(--glass-border);
-  box-shadow: 0 -10px 40px var(--glass-shadow);
-  color: var(--text-secondary);
+footer.rodape{
+  margin-top:6px;
+  text-align:center;
+  font-size:10.5px;
+  color:var(--text-mute);
+  letter-spacing:.4px;
+  flex-shrink:0;
+}
+footer.rodape strong{color:var(--text-dim);font-weight:600}
+
+/* salvo flash */
+.toast{
+  position:fixed;
+  bottom:24px;left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--bg-3);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:10px 18px;
+  border-radius:10px;
+  font-size:13px;
+  font-weight:500;
+  opacity:0;
+  pointer-events:none;
+  transition:all .25s ease;
+  z-index:9999;
+  display:flex;align-items:center;gap:8px;
+  box-shadow:0 12px 30px rgba(0,0,0,.4);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast i{color:var(--verde)}
+
+/* ===== MOBILE / TABLET ===== */
+@media (max-width:980px){
+  body{
+    overflow:auto;
+    padding:10px 10px 24px;
+  }
+  body::before{display:none}
+
+  .wrap{
+    height:auto;
+    max-width:100%;
+    display:block;
+  }
+
+  header.topo{
+    padding:10px 12px;
+    margin-bottom:10px;
+    border-radius:14px;
+    gap:10px;
+  }
+  .brand{gap:10px;min-width:0;flex:1}
+  .brand .logo-wrap{width:40px;height:40px;border-radius:9px;flex-shrink:0}
+  .brand .logo-wrap .fallback{font-size:15px}
+  .brand h1{font-size:15px;line-height:1.15}
+  .brand .sub{font-size:9.5px;letter-spacing:.5px}
+  .relogio .hora{font-size:15px}
+  .relogio .data{font-size:9px;letter-spacing:1px;margin-top:2px}
+
+  .grid{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .card{
+    padding:12px 13px;
+    border-radius:14px;
+  }
+  .card-head{margin-bottom:10px;padding-bottom:8px}
+  .card-head h2{font-size:12.5px}
+  .card-head .icon{width:30px;height:30px;font-size:13px}
+  .card-head .tag{font-size:9.5px}
+
+  /* Tabela mais compacta no mobile */
+  .tabela{font-size:12.5px}
+  .tabela thead th{font-size:10px;padding:5px 4px;letter-spacing:1px}
+  .tabela tbody td{font-size:12px;padding:5px 4px;line-height:1.2}
+  .tabela input[type="number"]{
+    width:100%;
+    max-width:78px;
+    padding:7px 6px;
+    font-size:14px;
+    border-radius:7px;
+  }
+  .tabela tfoot td{font-size:12.5px;padding:8px 4px}
+  .tabela tfoot td:first-child{font-size:10.5px}
+
+  /* Campos com input maiores pra dedo */
+  .field{margin-bottom:9px}
+  .field label{font-size:10.5px;margin-bottom:5px}
+  .field input{
+    padding:11px 12px;
+    font-size:15px;
+    border-radius:9px;
+  }
+
+  /* Resultado */
+  .resultado{
+    padding:11px 13px;
+    margin-top:12px;
+    border-radius:11px;
+    gap:11px;
+  }
+  .resultado .res-icon{width:36px;height:36px;font-size:14px}
+  .resultado .res-label{font-size:10px;letter-spacing:1.2px}
+  .resultado .res-value{font-size:15.5px}
+
+  /* Resumo + Ações empilhados */
+  .resumo{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px 6px;
+    padding:12px 14px;
+    margin-top:10px;
+    border-radius:14px;
+  }
+  .resumo .stat{
+    padding:6px 10px;
+    border-left:2px solid var(--border);
+  }
+  .resumo .stat:nth-child(odd){border-left:none}
+  .resumo .stat .k{font-size:9.5px;letter-spacing:1.1px}
+  .resumo .stat .v{font-size:15.5px}
+
+  .acoes{
+    grid-column:1 / -1;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:8px;
+    margin-top:4px;
+    padding-top:10px;
+    border-top:1px dashed var(--border);
+  }
+  .acoes button{
+    width:100%;
+    justify-content:center;
+    padding:11px 8px;
+    font-size:12.5px;
+  }
+
+  footer.rodape{
+    margin-top:14px;
+    font-size:11px;
+  }
 }
 
-.footer-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  flex-wrap: wrap;
+/* ===== MOBILE PEQUENO ===== */
+@media (max-width:420px){
+  body{padding:8px 8px 20px}
+  .brand h1{font-size:14px}
+  .brand .sub{font-size:9px}
+  .relogio .hora{font-size:13.5px}
+  .relogio .data{font-size:8.5px}
+
+  .card-head .tag{display:none}
+  .field input{font-size:14.5px}
+
+  .resumo{grid-template-columns:1fr 1fr}
+  .acoes{grid-template-columns:1fr 1fr;gap:7px}
+  .acoes .primary{grid-column:1 / -1}
+
+  /* table - mostrar apenas R$/Qtd/Sub em colunas mais apertadas */
+  .tabela{font-size:12px}
+  .tabela tbody td{font-size:11.5px;padding:5px 3px}
+  .tabela input[type="number"]{max-width:64px;font-size:13.5px;padding:7px 4px}
+  .tabela tbody td:nth-child(3){font-size:11.5px}
 }
 
-.footer strong {
-  color: var(--azul);
-  font-weight: 700;
-}
+/* ===== IMPRESSÃO TÉRMICA 78mm ===== */
+@media print{
+  @page{ size:78mm auto; margin:0; }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
+  body{
+    background:#fff !important;
+    color:#000 !important;
+    padding:6px 4px !important;
+    width:78mm;
+    font-family:"Courier New", monospace;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+  body::before{display:none}
+  .wrap{max-width:100%}
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
-  .tab-button {
-    padding: 12px 20px;
-    font-size: 14px;
-    border-radius: 50px !important;
+  header.topo{
+    display:block;
+    text-align:center;
+    background:none !important;
+    border:none !important;
+    padding:0;
+    margin-bottom:4px;
   }
-  
-  .select-container {
-    flex-wrap: wrap;
+  .brand{display:block}
+  .brand .logo-wrap{
+    width:60px;height:60px;
+    margin:0 auto 4px;
+    background:#fff !important;
+    box-shadow:none !important;
+    border:1px solid #000;
   }
-  
-  .select-container select,
-  .select-container button {
-    flex: 1 1 45%;
+  .brand .logo-wrap img{background:#fff;padding:2px}
+  .brand .logo-wrap .fallback{color:#000}
+  .brand h1{font-size:13px;color:#000}
+  .brand .sub{color:#000;font-size:10px}
+  .relogio{display:block;text-align:center;margin-top:4px}
+  .relogio .hora{font-size:12px;color:#000}
+  .relogio .data{color:#000;font-size:10px}
+
+  .grid{display:block}
+  .card{
+    background:none !important;
+    border:none !important;
+    border-top:1px dashed #000 !important;
+    border-radius:0;
+    padding:6px 0;
+    margin:0;
   }
+  .card::before{display:none}
+  .card-head{padding:2px 0;border:none;margin-bottom:4px}
+  .card-head .icon{display:none}
+  .card-head h2{font-size:11px;color:#000}
+  .card-head .tag{display:none}
+
+  .tabela thead th{color:#000;border-color:#000;font-size:9px;padding:2px}
+  .tabela tbody td{
+    color:#000 !important;
+    font-size:10px;
+    padding:1px 2px;
+    border-color:#000;
+  }
+  .tabela tbody td:nth-child(2){text-align:center}
+  .tabela tbody td:nth-child(3){color:#000}
+  .tabela input{display:none}
+  .tabela .qtd-print{display:inline-block !important;font-family:"Courier New",monospace;font-size:10px}
+  .tabela tfoot td{color:#000;font-size:11px;padding:3px 2px;border-color:#000}
+  .tabela tfoot td:last-child{color:#000}
+
+  .field{margin:1px 0;display:flex;justify-content:space-between;align-items:center;gap:6px}
+  .field label{
+    color:#000;font-size:10px;letter-spacing:0;
+    text-transform:none;margin:0;font-weight:600;
+  }
+  .field label i{display:none}
+  .field input{
+    border:none !important;background:none !important;
+    color:#000 !important;padding:0;font-size:10px;
+    text-align:right;width:auto;box-shadow:none !important;
+  }
+
+  .resultado{
+    background:none !important;
+    border:none !important;
+    border-top:1px dashed #000 !important;
+    border-radius:0;
+    padding:4px 0;
+    color:#000 !important;
+    animation:none !important;
+    box-shadow:none !important;
+  }
+  .resultado .res-icon{display:none}
+  .resultado .res-label{color:#000;font-size:9px}
+  .resultado .res-value{color:#000 !important;font-size:12px}
+
+  .resumo{
+    display:block;
+    background:none !important;
+    border:none !important;
+    border-top:1px dashed #000 !important;
+    border-bottom:1px dashed #000 !important;
+    border-radius:0;
+    padding:4px 0;
+    margin:6px 0;
+  }
+  .resumo .stat{
+    display:flex;justify-content:space-between;
+    border:none;padding:1px 0;
+  }
+  .resumo .stat .k{color:#000;font-size:10px;letter-spacing:0}
+  .resumo .stat .v{color:#000;font-size:10px}
+
+  .acoes,.toast{display:none !important}
+
+  footer.rodape{
+    color:#000;
+    border-top:1px dashed #000;
+    padding-top:4px;
+    margin-top:6px;
+    font-size:9px;
+  }
+  footer.rodape strong{color:#000}
 }
 </style>
 </head>
 
-<body data-theme="light">
+<body>
 
-<!-- Theme Toggle -->
-<button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">
-  <i class="fas fa-sun"></i>
-  <i class="fas fa-moon"></i>
-</button>
+<div class="wrap">
 
-<!-- Sistema de Abas -->
-<div class="tabs-container">
-  <button class="tab-button active" onclick="switchTab('pesquisa')">
-    <i class="fas fa-search"></i>
-    Pesquisa Adaptações
-  </button>
-  <button class="tab-button" onclick="switchTab('placa')">
-    <i class="fas fa-image"></i>
-    Placa Adaptações
-  </button>
-</div>
-
-<!-- ABA 1: Pesquisa Adaptações -->
-<div id="pesquisa" class="tab-content active">
-  <div class="pesquisa-header">
-    <div class="logo-container">
-      <img src="amg/logo.png" alt="Pinheirinho Celulares" class="logo" 
-           onerror="this.style.display='none'; this.parentElement.innerHTML='<h1 style=color:var(--azul)>Pinheirinho Celulares</h1>'">
+<header class="topo">
+  <div class="brand">
+    <div class="logo-wrap">
+      <img src="amg/logo.png" alt="Pinheirinho Celulares" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','<span class=&quot;fallback&quot;>PC</span>');">
     </div>
-    
-    <div class="search-container">
-      <div class="search-wrapper">
-        <input id="busca" type="text" placeholder="Digite o modelo ou marca do celular..." autocomplete="off">
-        <i class="fas fa-search"></i>
+    <div>
+      <h1>Pinheirinho Celulares</h1>
+      <div class="sub">Fechamento de Caixa</div>
+    </div>
+  </div>
+  <div class="relogio">
+    <div class="hora" id="hora">--:--:--</div>
+    <div class="data" id="data">--/--/----</div>
+  </div>
+</header>
+
+<div class="grid">
+
+  <!-- DINHEIRO CONTAGEM -->
+  <div class="card">
+    <div class="card-head">
+      <div class="icon laranja"><i class="fa-solid fa-money-bill-wave"></i></div>
+      <h2>Dinheiro · Contagem</h2>
+      <span class="tag">cédulas + moedas</span>
+    </div>
+    <table class="tabela">
+      <colgroup>
+        <col class="c-nota">
+        <col class="c-qtd">
+        <col class="c-sub">
+      </colgroup>
+      <thead>
+        <tr><th>Nota</th><th>Qtd</th><th>Subtotal</th></tr>
+      </thead>
+      <tbody id="linhas"></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2">Total contado</td>
+          <td id="totalContado">R$ 0,00</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- DINHEIRO SISTEMA -->
+  <div class="card">
+    <div class="card-head">
+      <div class="icon azul"><i class="fa-solid fa-cash-register"></i></div>
+      <h2>Dinheiro · Sistema</h2>
+      <span class="tag">conferência</span>
+    </div>
+
+    <div class="field">
+      <label><i class="fa-solid fa-door-open"></i> Abertura</label>
+      <input type="number" step="0.01" id="abertura" placeholder="0,00">
+    </div>
+    <div class="field">
+      <label><i class="fa-solid fa-plus"></i> Suprimento</label>
+      <input type="number" step="0.01" id="suprimento" placeholder="0,00">
+    </div>
+    <div class="field">
+      <label><i class="fa-solid fa-minus"></i> Sangria</label>
+      <input type="number" step="0.01" id="sangria" placeholder="0,00">
+    </div>
+    <div class="field">
+      <label><i class="fa-solid fa-server"></i> Valor no sistema</label>
+      <input type="number" step="0.01" id="sistemaDinheiro" placeholder="0,00">
+    </div>
+
+    <div class="resultado" id="resultadoDinheiro">
+      <div class="res-icon"><i class="fa-solid fa-circle-info"></i></div>
+      <div class="res-text">
+        <div class="res-label">Status</div>
+        <div class="res-value">Informe os valores</div>
       </div>
     </div>
   </div>
 
-  <div class="container" id="resultado"></div>
-
-  <div class="footer">
-    <div class="footer-content">
-      <span>Desenvolvido por <strong>Mattheus Avilar</strong></span>
-      <span>•</span>
-      <span style="background:linear-gradient(135deg,var(--azul),var(--laranja));-webkit-background-clip:text;-webkit-text-fill-color:transparent">Versão 5.0</span>
-    </div>
-  </div>
-</div>
-
-<!-- ABA 2: Placa Adaptações -->
-<div id="placa" class="tab-content">
-  <div class="placa-container">
-    <div class="topo-fixo">
-      <h2>
-        <i class="fas fa-palette"></i>
-        Placa Película
-      </h2>
-
-      <div class="select-container">
-        <select id="fabricante">
-          <option value="">Fabricante</option>
-        </select>
-
-        <select id="modelo" disabled>
-          <option value="">Modelo</option>
-        </select>
-
-        <button class="btn-gerar" onclick="gerarImagem()">
-          <i class="fas fa-wand-magic-sparkles"></i>
-          Gerar
-        </button>
-
-        <button class="btn-download" onclick="baixarImagem()">
-          <i class="fas fa-download"></i>
-          Baixar
-        </button>
-      </div>
+  <!-- CARTÃO -->
+  <div class="card">
+    <div class="card-head">
+      <div class="icon verde"><i class="fa-solid fa-credit-card"></i></div>
+      <h2>Cartão</h2>
+      <span class="tag">maquininhas</span>
     </div>
 
-    <div class="area-canvas">
-      <div class="canvas-wrapper">
-        <canvas id="canvas" width="1181" height="1181"></canvas>
+    <div class="field">
+      <label><i class="fa-solid fa-mobile-screen"></i> Maquininha 1</label>
+      <input type="number" step="0.01" id="maq1" placeholder="0,00">
+    </div>
+    <div class="field">
+      <label><i class="fa-solid fa-mobile-screen"></i> Maquininha 2</label>
+      <input type="number" step="0.01" id="maq2" placeholder="0,00">
+    </div>
+    <div class="field">
+      <label><i class="fa-solid fa-server"></i> Valor no sistema</label>
+      <input type="number" step="0.01" id="sistemaCartao" placeholder="0,00">
+    </div>
+
+    <div class="resultado" id="resultadoCartao">
+      <div class="res-icon"><i class="fa-solid fa-circle-info"></i></div>
+      <div class="res-text">
+        <div class="res-label">Status</div>
+        <div class="res-value">Informe os valores</div>
       </div>
     </div>
   </div>
+
+</div><!-- /grid -->
+
+<!-- RESUMO + AÇÕES -->
+<div class="resumo">
+  <div class="stat">
+    <span class="k">Total Dinheiro</span>
+    <span class="v" id="rsDinheiro">R$ 0,00</span>
+  </div>
+  <div class="stat">
+    <span class="k">Total Cartão</span>
+    <span class="v" id="rsCartao">R$ 0,00</span>
+  </div>
+  <div class="stat dest">
+    <span class="k">Total Geral</span>
+    <span class="v" id="rsGeral">R$ 0,00</span>
+  </div>
+  <div class="stat">
+    <span class="k">Diferença</span>
+    <span class="v" id="rsDif">R$ 0,00</span>
+  </div>
+  <div class="acoes">
+    <button class="primary" onclick="window.print()">
+      <i class="fa-solid fa-print"></i> Imprimir
+    </button>
+    <button onclick="salvarManual()">
+      <i class="fa-solid fa-floppy-disk"></i> Salvar
+    </button>
+    <button class="danger" onclick="limparTudo()">
+      <i class="fa-solid fa-trash-can"></i> Limpar
+    </button>
+  </div>
 </div>
+
+<footer class="rodape">
+  Programa desenvolvido por <strong>Mattheus Avilar</strong>
+</footer>
+
+</div><!-- /wrap -->
+
+<div class="toast" id="toast"><i class="fa-solid fa-circle-check"></i> <span id="toastMsg">Salvo</span></div>
 
 <script>
-// ===== DADOS =====
-const dados = [
+const valores=[200,100,50,20,10,5,2,1,0.5,0.25,0.10,0.05];
+const tbody=document.getElementById("linhas");
+const STORAGE_KEY="pinheirinho_fechamento_v1";
 
-/* ================= SAMSUNG ================= */
-{marca:"Samsung",modelo:"Galaxy J2 Prime",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy J2 Core",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy J4 2018",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy J4 Core",adaptacoes:["Galaxy J4 Plus","Galaxy J6 Plus"]},
-{marca:"Samsung",modelo:"Galaxy J4 Plus",adaptacoes:["Galaxy J4 Core","Galaxy J6 Plus"]},
-{marca:"Samsung",modelo:"Galaxy J5",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy J5 Prime",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy J5 Pro",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy J6 2018",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy J6 Plus",adaptacoes:["Galaxy J4 Core","Galaxy J4 Plus"]},
-{marca:"Samsung",modelo:"Galaxy J7",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy J7 Pro",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy J7 Prime",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy J8",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy A2 Core",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy A6 2018",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy A6 Plus",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy A7 2017",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy A7 2018",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy A8 2018",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy A8 Plus",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy A9 2018",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy A01",adaptacoes:["Xiaomi Mi Play"]},
-{marca:"Samsung",modelo:"Galaxy A01 Core",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy A02",adaptacoes:["Galaxy A02S","Galaxy A03","Galaxy A03S","Galaxy A03 Core","Galaxy A04","Galaxy A04S","Galaxy A04E","Galaxy A12","Galaxy A13","Galaxy M23","Galaxy A70","Redmi 9A","Redmi 9A Sport","Redmi 9i","Redmi 9C","Moto E7","Moto E7 Power","Poco M4"]},
-{marca:"Samsung",modelo:"Galaxy A05",adaptacoes:["Galaxy A05S","Redmi 13C","Redmi C65","TCL 40","Realme C33","Realme Note 50","Realme Note 60"]},
-{marca:"Samsung",modelo:"Galaxy A05S",adaptacoes:["Galaxy A05","Redmi 13C","Redmi C65","TCL 40","Realme C33","Realme Note 50","Realme Note 60"]},
-{marca:"Samsung",modelo:"Galaxy A06",adaptacoes:["Galaxy A05","Galaxy A07","Redmi 13C","Redmi C65"]},
-{marca:"Samsung",modelo:"Galaxy A10",adaptacoes:["Galaxy A10S","Galaxy M10","Moto G8 Play","Moto G8 Plus","Moto G7","LG K40S","Redmi 8","Redmi 8A"]},
-{marca:"Samsung",modelo:"Galaxy A11",adaptacoes:["Moto G41","Moto G51","Moto G52","Redmi Note 10","Redmi 11 Lite","Redmi Note 9","Realme 7","Realme 7 Pro"]},
-{marca:"Samsung",modelo:"Galaxy A12",adaptacoes:["Galaxy M12","Galaxy A02","Galaxy A02S","Galaxy A03","Galaxy A03 Core","Galaxy A03S","Galaxy A04","Galaxy A04E","Galaxy A04S","Galaxy A13","Galaxy A23 5G","Galaxy A70","Moto E7","Moto E7 Power"]},
-{marca:"Samsung",modelo:"Galaxy A13",adaptacoes:["Galaxy M13","Galaxy A12","Galaxy M12","Galaxy A02","Galaxy A02S","Galaxy A03","Galaxy A03 Core","Galaxy A03S","Galaxy A04","Galaxy A04E","Galaxy A04S","Galaxy A23","Galaxy A70","Moto E7","Moto E7 Power"]},
-{marca:"Samsung",modelo:"Galaxy A14",adaptacoes:["Galaxy A22 5G","Galaxy M14","Moto One Fusion","Galaxy A16 4G","Galaxy A16"]},
-{marca:"Samsung",modelo:"Galaxy A15",adaptacoes:["Samsung A25","Samsung M15","Samsung M24","Samsung M25","Samsung A34 5G"]},
-{marca:"Samsung",modelo:"Galaxy A16",adaptacoes:["Galaxy A14","Galaxy A17","Galaxy A26"]},
-{marca:"Samsung",modelo:"Galaxy A17",adaptacoes:["Galaxy A16","Galaxy A26","Galaxy A14"]},
-{marca:"Samsung",modelo:"Galaxy A20",adaptacoes:["Galaxy A30","Galaxy A50","Galaxy A30S","Galaxy A50S","Galaxy M31","Galaxy M30S"]},
-{marca:"Samsung",modelo:"Galaxy A20S",adaptacoes:["Galaxy A32 5G","Moto One Fusion"]},
-{marca:"Samsung",modelo:"Galaxy A21",adaptacoes:["Galaxy A21S","Galaxy A71","Moto G22","Redmi Note 11","Poco X3"]},
-{marca:"Samsung",modelo:"Galaxy A22 4G",adaptacoes:["Galaxy A31","Galaxy A32 4G","Galaxy M31","Galaxy M32","Galaxy A33","Galaxy M22"]},
-{marca:"Samsung",modelo:"Galaxy A22 5G",adaptacoes:["Galaxy A32 5G","Galaxy A14","Galaxy M14"]},
-{marca:"Samsung",modelo:"Galaxy A23",adaptacoes:["Galaxy A02","Galaxy A02S","Galaxy A03","Galaxy A03 Core","Galaxy A03S","Galaxy A04","Galaxy A04E","Galaxy A04S","Galaxy A70","Galaxy A32","Galaxy A22","Realme C2"]},
-{marca:"Samsung",modelo:"Galaxy A24",adaptacoes:["iPhone 15 Pro Max","Galaxy A25","Galaxy A15","Galaxy M15"]},
-{marca:"Samsung",modelo:"Galaxy A25",adaptacoes:["iPhone 15 Pro Max","Galaxy A24","Galaxy A15","Galaxy M15"]},
-{marca:"Samsung",modelo:"Galaxy A26",adaptacoes:["Galaxy A16","Galaxy A17"]},
-{marca:"Samsung",modelo:"Galaxy A32 4G",adaptacoes:["Galaxy A22 4G","Galaxy A33","Galaxy M32","Poco M2"]},
-{marca:"Samsung",modelo:"Galaxy A32 5G",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy A33",adaptacoes:["Galaxy M21S","Galaxy M31","Galaxy M22","Galaxy M32","Galaxy A31","Galaxy A32 4G"]},
-{marca:"Samsung",modelo:"Galaxy A34",adaptacoes:["iPhone 14 Pro Max","Galaxy M34","Galaxy M15"]},
-{marca:"Samsung",modelo:"Galaxy A35",adaptacoes:["Galaxy A56","Galaxy S24 FE","Galaxy A55 5G","Galaxy M35"]},
-{marca:"Samsung",modelo:"Galaxy A36",adaptacoes:["Galaxy A37","Galaxy A56","Galaxy S24 FE","Galaxy S25 FE"]},
-{marca:"Samsung",modelo:"Galaxy A37",adaptacoes:["Galaxy A36","Galaxy A56","Galaxy S24 FE","Galaxy S25 FE"]},
-{marca:"Samsung",modelo:"Galaxy A41",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy A50",adaptacoes:["Galaxy A20","Galaxy A30","Galaxy A50S","Galaxy A30S"]},
-{marca:"Samsung",modelo:"Galaxy A51",adaptacoes:["Galaxy A52","Galaxy A52S","Galaxy A53 5G","Galaxy S20 FE"]},
-{marca:"Samsung",modelo:"Galaxy A53",adaptacoes:["Galaxy A52S","Galaxy S20 FE","Moto Edge 30","Poco M4 Pro 4G"]},
-{marca:"Samsung",modelo:"Galaxy A54",adaptacoes:["Galaxy S21 FE","Galaxy S23 FE"]},
-{marca:"Samsung",modelo:"Galaxy A55",adaptacoes:["Galaxy A35","Galaxy M35"]},
-{marca:"Samsung",modelo:"Galaxy A56",adaptacoes:["Galaxy A36","Galaxy S24 FE"]},
-{marca:"Samsung",modelo:"Galaxy A70",adaptacoes:["Galaxy A12","Galaxy M12","Galaxy A02","Galaxy A03","Galaxy A03S","Galaxy A03 Core","Galaxy A13 4G","Galaxy A13 5G"]},
-{marca:"Samsung",modelo:"Galaxy A71",adaptacoes:["Galaxy A21","Galaxy A21S","Moto G22","Redmi Note 11","Poco X3","Galaxy M62"]},
-{marca:"Samsung",modelo:"Galaxy A72",adaptacoes:["Galaxy A52","Galaxy A52S","Galaxy S20 FE"]},
-{marca:"Samsung",modelo:"Galaxy A73",adaptacoes:["Galaxy A53","Galaxy A54","Galaxy S21 FE"]},
-{marca:"Samsung",modelo:"Galaxy A80",adaptacoes:["Infinix Note 12 Pro 5G"]},
-{marca:"Samsung",modelo:"Galaxy M12",adaptacoes:["Galaxy A12","Galaxy A02","Galaxy A02S","Galaxy A03","Galaxy A03S","Galaxy A04","Galaxy A04S","Galaxy A13"]},
-{marca:"Samsung",modelo:"Galaxy M13",adaptacoes:["Galaxy A13","Galaxy A12","Galaxy A04","Galaxy A04S"]},
-{marca:"Samsung",modelo:"Galaxy M14",adaptacoes:["Galaxy A14","Galaxy A22 5G"]},
-{marca:"Samsung",modelo:"Galaxy M15",adaptacoes:["Galaxy A15","Galaxy A24","Galaxy A25"]},
-{marca:"Samsung",modelo:"Galaxy M20",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy M21",adaptacoes:["Galaxy A21","Galaxy A21S"]},
-{marca:"Samsung",modelo:"Galaxy M22",adaptacoes:["Galaxy A22","Galaxy A32 4G"]},
-{marca:"Samsung",modelo:"Galaxy M23",adaptacoes:["Galaxy A13","Galaxy A23","Galaxy A32 5G"]},
-{marca:"Samsung",modelo:"Galaxy M31",adaptacoes:["Galaxy A20","Galaxy A30","Galaxy A31","Galaxy A32"]},
-{marca:"Samsung",modelo:"Galaxy M32",adaptacoes:["Galaxy A22","Galaxy A32 4G"]},
-{marca:"Samsung",modelo:"Galaxy M34",adaptacoes:["Galaxy A34","Galaxy A54"]},
-{marca:"Samsung",modelo:"Galaxy M35",adaptacoes:["Galaxy A35","Galaxy A55"]},
-{marca:"Samsung",modelo:"Galaxy M51",adaptacoes:["Galaxy M62"]},
-{marca:"Samsung",modelo:"Galaxy M52",adaptacoes:["Galaxy M62"]},
-{marca:"Samsung",modelo:"Galaxy M54",adaptacoes:["Galaxy M62"]},
-{marca:"Samsung",modelo:"Galaxy M55",adaptacoes:["Galaxy M62"]},
-{marca:"Samsung",modelo:"Galaxy M62",adaptacoes:["Galaxy M51","Galaxy M52","Galaxy M54","Galaxy M55","Galaxy A71"]},
-{marca:"Samsung",modelo:"Galaxy S8•S9",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S8 Plus•S9 Plus",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S10",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S10 Plus",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S10E",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S10 Lite",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S20",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S20 Plus",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S20 Ultra",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S20 FE",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S21",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S21 Plus",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S21 Ultra",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S21 FE",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S22",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S22 Plus",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S22 Ultra",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S23",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S23 Plus",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S23 FE",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S24",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S24 Plus",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S24 Ultra",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S24 FE",adaptacoes:["Galaxy A35","Galaxy A36","Galaxy A56"]},
-{marca:"Samsung",modelo:"Galaxy S25",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S25 Plus",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S25 Ultra",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S25 FE",adaptacoes:["Galaxy A36","Galaxy S24 FE"]},
-{marca:"Samsung",modelo:"Galaxy S26",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S26 Plus",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S26 Ultra",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S26 FE",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy S26 Edge",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy Note 10",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy Note 10 Plus",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy Note 10 Lite",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy Note 20",adaptacoes:["Sem Adaptação"]},
-{marca:"Samsung",modelo:"Galaxy Note 20 Ultra",adaptacoes:["Sem Adaptação"]},
-
-/* ================= MOTOROLA ================= */
-{marca:"Motorola",modelo:"Moto E5 Play",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto E5 Plus",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto E6",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto E6S",adaptacoes:["Moto E6i","Moto E6 Plus","Moto E7","Moto E20","Moto G9 Play","Moto E7 Power","Galaxy A13","Galaxy A23","Galaxy A12","Moto G30","Moto E20"]},
-{marca:"Motorola",modelo:"Moto E7",adaptacoes:["Moto E7 Power","Galaxy A02","Galaxy A03","Galaxy A12","Galaxy A13","Galaxy M12"]},
-{marca:"Motorola",modelo:"Moto E7 Plus",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto E13",adaptacoes:["Moto E20","Moto E30","Moto G9 Play","Galaxy A02S","Moto G30","Moto E7 Power","Moto One Fusion","Realme C11","Galaxy A12","Galaxy A70"]},
-{marca:"Motorola",modelo:"Moto E14",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto E15",adaptacoes:["Moto G05","Moto G15","Moto G35"]},
-{marca:"Motorola",modelo:"Moto E20",adaptacoes:["Galaxy A07","Moto E7","Redmi 9A","Redmi 9A Sport","Redmi 9i","Galaxy A12 5G","Galaxy M34 5G","Galaxy M12"]},
-{marca:"Motorola",modelo:"Moto E22",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto E32",adaptacoes:["Moto G22","Moto Edge 20"]},
-{marca:"Motorola",modelo:"Moto E40",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto G 5G",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto G 5G PLus",adaptacoes:["Moto G100"]},
-{marca:"Motorola",modelo:"Moto G04•G24",adaptacoes:["Moto G34","Moto E14"]},
-{marca:"Motorola",modelo:"Moto G5",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto G5S",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto G5S Plus",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto G5 Plus",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto G05•G15",adaptacoes:["Moto G35","Moto G56","Moto G17"]},
-{marca:"Motorola",modelo:"Moto G5G",adaptacoes:["Moto Edge 20"]},
-{marca:"Motorola",modelo:"Moto G5G Plus",adaptacoes:["Moto E5"]},
-{marca:"Motorola",modelo:"Moto G06",adaptacoes:["Redmi 14C"]},
-{marca:"Motorola",modelo:"Moto G6",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto G6 Plus",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto G6 Play",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto G7",adaptacoes:["Moto G7 Plus"]},
-{marca:"Motorola",modelo:"Moto G7 Play",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto G7 Power",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto G8",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto G8 Play",adaptacoes:["Moto G8 Plus","Moto One Macro"]},
-{marca:"Motorola",modelo:"Moto G8 Power",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto G8 Power Lite",adaptacoes:["Moto G8","Moto G9 Play","Moto G10","Moto G20","Moto G30","Moto E20","Galaxy A12"]},
-{marca:"Motorola",modelo:"Moto G9",adaptacoes:["Moto 9 Play","Redmi 9A","Redmi 9A Sport","Redmi 9i","Galaxy A23 5G","Galaxy A32 5G","Moto G20","Moto G30","Moto G50","Moto G10 Power","Moto One Fusion","Galaxy M12"]},
-{marca:"Motorola",modelo:"Moto G9 Plus",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto G9 Power",adaptacoes:["Moto G200"]},
-{marca:"Motorola",modelo:"Moto G10",adaptacoes:["Moto G10 Power","Moto G20","Moto G30","Moto G8 Power Lite","Galaxy A12","Galaxy A70"]},
-{marca:"Motorola",modelo:"Moto G10 Power",adaptacoes:["Galaxy A12","Galaxy A70","Redmi 9A","Redmi 9C","Redmi 9A Sport"]},
-{marca:"Motorola",modelo:"Moto G13",adaptacoes:["Moto G14","Moto G23","Moto G53","Moto G42","Moto G62"]},
-{marca:"Motorola",modelo:"Moto G14",adaptacoes:["Moto G62","Moto G53","Moto G54"]},
-{marca:"Motorola",modelo:"Moto G22",adaptacoes:["Moto G51","Moto G53","Moto G71"]},
-{marca:"Motorola",modelo:"Moto G23",adaptacoes:["Moto G53 5G"]},
-{marca:"Motorola",modelo:"Moto G31",adaptacoes:["Moto G41","Moto G71"]},
-{marca:"Motorola",modelo:"Moto G32",adaptacoes:["Moto G53"]},
-{marca:"Motorola",modelo:"Moto G34",adaptacoes:["Moto G13","Moto G45","Moto G73"]},
-{marca:"Motorola",modelo:"Moto G35",adaptacoes:["Poco X5","Moto G53","Moto G05","Moto G15"]},
-{marca:"Motorola",modelo:"Moto G40",adaptacoes:["Moto G40 Fusion","Redmi 10 Prime","Redmi Mi 11 Lite"]},
-{marca:"Motorola",modelo:"Moto G40 Fusion",adaptacoes:["Moto G40","Redmi 10 Prime","Redmi Mi 11 Lite"]},
-{marca:"Motorola",modelo:"Moto G42",adaptacoes:["Moto G52","Moto G71","Galaxy A53","Redmi Note 10","Galaxy A11"]},
-{marca:"Motorola",modelo:"Moto G50",adaptacoes:["Moto G8 Power Lite"]},
-{marca:"Motorola",modelo:"Moto G51",adaptacoes:["Moto G22","Galaxy A11"]},
-{marca:"Motorola",modelo:"Moto G52",adaptacoes:["Moto G72","Moto G82"]},
-{marca:"Motorola",modelo:"Moto G53",adaptacoes:["Moto G13","Moto G22","Moto G23","Moto G32","Moto G34","Redmi Note 10 5G"]},
-{marca:"Motorola",modelo:"Moto G54",adaptacoes:["Moto G23","Moto G13"]},
-{marca:"Motorola",modelo:"Moto G55",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto G56",adaptacoes:["Moto G35","Moto G75","Moto G05","Moto G15"]},
-{marca:"Motorola",modelo:"Moto G60",adaptacoes:["Moto G60S","Redmi 10C","Moto G9+"]},
-{marca:"Motorola",modelo:"Moto G62",adaptacoes:["Moto G14"]},
-{marca:"Motorola",modelo:"Moto G71",adaptacoes:["Moto G41","Moto G31","Moto G42"]},
-{marca:"Motorola",modelo:"Moto G72",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto G73",adaptacoes:["Moto G34"]},
-{marca:"Motorola",modelo:"Moto G75",adaptacoes:["Moto G56"]},
-{marca:"Motorola",modelo:"Moto G82",adaptacoes:["Moto G52","Moto G84 5G"]},
-{marca:"Motorola",modelo:"Moto G84",adaptacoes:["Moto G54","Moto G14"]},
-{marca:"Motorola",modelo:"Moto G86",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto G100",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto G200",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto Edge 20",adaptacoes:["Moto Edge 30X","Moto Edge 30 Pro","Moto Edge 20 Lite"]},
-{marca:"Motorola",modelo:"Moto Edge 20 Pro",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto Edge 20 Lite",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto Edge 30",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto Edge 30 Pro",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto Edge 30 Neo",adaptacoes:["Moto Edge 50 Neo"]},
-{marca:"Motorola",modelo:"Moto Edge 50 Neo",adaptacoes:["Moto Edge 30 Neo"]},
-{marca:"Motorola",modelo:"Moto Edge 60",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto One",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto One Avision",adaptacoes:["Moto One Action"]},
-{marca:"Motorola",modelo:"Moto One Fusion",adaptacoes:["Moto G10","Moto G10 Power","Moto G20","Moto G30","Moto G40","Redmi 9A","Redmi 9i","Redmi 9A Sport","Galaxy A23"]},
-{marca:"Motorola",modelo:"Moto One Fusion Plus",adaptacoes:["Galaxy M52"]},
-{marca:"Motorola",modelo:"Moto One Hyper",adaptacoes:["Redmi Note 7","Moto G71","Galaxy A53","Moto G41","Moto G52","Redmi Mi 11 Lite"]},
-{marca:"Motorola",modelo:"Moto One Zoom",adaptacoes:["Galaxy A10","Moto G8+","Moto G8 Plus"]},
-{marca:"Motorola",modelo:"Moto Z2 Play",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto Z3 Play",adaptacoes:["Sem Adaptação"]},
-
-/* ================= APPLE ================= */
-{marca:"Apple",modelo:"iPhone 5•SE 1ºG",adaptacoes:["Sem Adaptação"]},
-{marca:"Apple",modelo:"iPhone 6•6S",adaptacoes:["Sem Adaptação"]},
-{marca:"Apple",modelo:"iPhone 6 Plus",adaptacoes:["Sem Adaptação"]},
-{marca:"Apple",modelo:"iPhone 7•8",adaptacoes:["iPhone SE 2ºG"]},
-{marca:"Apple",modelo:"iPhone 7 Plus•8 Plus",adaptacoes:["Sem Adaptação"]},
-{marca:"Apple",modelo:"iPhone X",adaptacoes:["iPhone XS","iPhone 11 Pro"]},
-{marca:"Apple",modelo:"iPhone XS Max",adaptacoes:["iPhone 11 Pro Max"]},
-{marca:"Apple",modelo:"iPhone XR•11",adaptacoes:["Sem Adaptação"]},
-{marca:"Apple",modelo:"iPhone 12•12 Pro",adaptacoes:["Sem Adaptação"]},
-{marca:"Apple",modelo:"iPhone 12 Pro Max",adaptacoes:["Sem Adaptação"]},
-{marca:"Apple",modelo:"iPhone 12 Mini",adaptacoes:["Sem Adaptação"]},
-{marca:"Apple",modelo:"iPhone 13•13 Pro",adaptacoes:["iPhone 14","iPhone 16E"]},
-{marca:"Apple",modelo:"iPhone 13 Pro Max",adaptacoes:["iPhone 14 Plus"]},
-{marca:"Apple",modelo:"iPhone 13 Mini",adaptacoes:["Sem Adaptação"]},
-{marca:"Apple",modelo:"iPhone 14",adaptacoes:["iPhone 13","iPhone 16E"]},
-{marca:"Apple",modelo:"iPhone 14 Pro",adaptacoes:["iPhone 16"]},
-{marca:"Apple",modelo:"iPhone 14 Plus",adaptacoes:["iPhone 13 Pro Max","iPhone 15 Plus"]},
-{marca:"Apple",modelo:"iPhone 14 Pro Max",adaptacoes:["Sem Adaptação"]},
-{marca:"Apple",modelo:"iPhone 15",adaptacoes:["iPhone 16"]},
-{marca:"Apple",modelo:"iPhone 15 Pro",adaptacoes:["Sem Adaptação"]},
-{marca:"Apple",modelo:"iPhone 15 Plus",adaptacoes:["iPhone 14 Plus","iPhone 15 Pro Max","iPhone 16 Plus"]},
-{marca:"Apple",modelo:"iPhone 15 Pro Max",adaptacoes:["iPhone 15 Plus","iPhone 16 Plus"]},
-{marca:"Apple",modelo:"iPhone 16",adaptacoes:["iPhone 14 Pro"]},
-{marca:"Apple",modelo:"iPhone 16 Pro",adaptacoes:["iPhone 17"]},
-{marca:"Apple",modelo:"iPhone 16 Plus",adaptacoes:["iPhone 15 Plus","iPhone 15 Pro Max"]},
-{marca:"Apple",modelo:"iPhone 16 Pro Max",adaptacoes:["iPhone 17 Pro Max"]},
-{marca:"Apple",modelo:"iPhone 16E",adaptacoes:["iPhone 13","iPhone 13 Pro","iPhone 14"]},
-{marca:"Apple",modelo:"iPhone 17",adaptacoes:["iPhone 16 Pro"]},
-{marca:"Apple",modelo:"iPhone 17 Pro",adaptacoes:["Sem Adaptação"]},
-{marca:"Apple",modelo:"iPhone 17 Pro Max",adaptacoes:["iPhone 16 Pro Max"]},
-{marca:"Apple",modelo:"iPhone 17 Air",adaptacoes:["Sem Adaptação"]},
-
-/* ================= XIAOMI / REDMI / POCO ================= */
-{marca:"Xiaomi",modelo:"Redmi 6A•7A",adaptacoes:["Sem Adaptação"]},
-{marca:"Xiaomi",modelo:"Redmi A1•A2",adaptacoes:["Sem Adaptação"]},
-{marca:"Xiaomi",modelo:"Redmi A3",adaptacoes:["Redmi 10C","Redmi 12C"]},
-{marca:"Xiaomi",modelo:"Redmi 9A•9C",adaptacoes:["Redmi 9i","Redmi 10A","Galaxy A02","Galaxy A03","Galaxy A12","Galaxy M12","Moto E7","Moto E20","Moto G9"]},
-{marca:"Xiaomi",modelo:"Redmi 9T",adaptacoes:["Redmi 9"]},
-{marca:"Xiaomi",modelo:"Redmi 10C",adaptacoes:["Redmi A3","Redmi 12C","Galaxy A05"]},
-{marca:"Xiaomi",modelo:"Redmi 12•13",adaptacoes:["Redmi Poco C65","Redmi Poco M6"]},
-{marca:"Xiaomi",modelo:"Redmi 12C",adaptacoes:["Redmi A3","Redmi 10C","Galaxy A05","Galaxy A15","Moto G23","Moto G34"]},
-{marca:"Xiaomi",modelo:"Redmi 13C",adaptacoes:["Galaxy A05","Galaxy A05S","Galaxy A06","Galaxy A07"]},
-{marca:"Xiaomi",modelo:"Redmi 14C",adaptacoes:["Poco C75","Poco C71","Redmi A5","Moto G06"]},
-{marca:"Xiaomi",modelo:"Redmi 15",adaptacoes:["Sem Adaptação"]},
-{marca:"Xiaomi",modelo:"Redmi 15C",adaptacoes:["Poco C85"]},
-{marca:"Xiaomi",modelo:"Note 6 Pro",adaptacoes:["Redmi Mi 8 Lite"]},
-{marca:"Xiaomi",modelo:"Redmi Note 7•8",adaptacoes:["Galaxy A10","Galaxy A20","Galaxy A30","Moto G7"]},
-{marca:"Xiaomi",modelo:"Redmi Note 8T",adaptacoes:["Sem Adaptação"]},
-{marca:"Xiaomi",modelo:"Redmi Note 8 Pro",adaptacoes:["Galaxy A30","Galaxy A50","Moto G8 Power"]},
-{marca:"Xiaomi",modelo:"Redmi Note 9",adaptacoes:["Galaxy A11","Galaxy A21","Moto G22","Moto G31"]},
-{marca:"Xiaomi",modelo:"Redmi Note 9S",adaptacoes:["Galaxy A31","SGalaxy A32","Moto G40","Moto G41"]},
-{marca:"Xiaomi",modelo:"Redmi Note 9 Pro",adaptacoes:["Galaxy A31","Galaxy A32","Moto G40","Moto G41"]},
-{marca:"Xiaomi",modelo:"Redmi Note 10",adaptacoes:["Redmi Note 10S","Redmi Note 11","Redmi Note 11S","Redmi Note 12","Galaxy A11","Galaxy A21","Moto G22"]},
-{marca:"Xiaomi",modelo:"Redmi Note 10 5G",adaptacoes:["Moto G13","Moto G53"]},
-{marca:"Xiaomi",modelo:"Redmi Note 10 Pro",adaptacoes:["Redmi Note 11 Pro","SGalaxy A52","Galaxy A52S","Galaxy S20 FE","Moto G82"]},
-{marca:"Xiaomi",modelo:"Redmi Note 11",adaptacoes:["Redmi Note 10","Redmi Note 11S","Redmi Note 12","Galaxy A21","Galaxy A71","Moto G22"]},
-{marca:"Xiaomi",modelo:"Redmi Note 11S",adaptacoes:["Redmi Note 10","Redmi Note 11","Redmi Note 12","Galaxy A32","Galaxy A33","Moto G52"]},
-{marca:"Xiaomi",modelo:"Redmi Note 11 Pro",adaptacoes:["Redmi Note 10 Pro","Galaxy A52","Galaxy A53","Moto G82"]},
-{marca:"Xiaomi",modelo:"Redmi Note 11 Pro 5G",adaptacoes:["Galaxy A53","Galaxy A54","Moto G82"]},
-{marca:"Xiaomi",modelo:"Redmi Note 12",adaptacoes:["Samsung A23","Samsung A33","Motorola G32"]},
-{marca:"Xiaomi",modelo:"Redmi Note 12S",adaptacoes:["Redmi Note 10","Redmi Note 11","Redmi Note 11S","Galaxy A33","Galaxy A34","Moto G52"]},
-{marca:"Xiaomi",modelo:"Redmi Note 12 Pro",adaptacoes:["Galaxy A53","Galaxy A54","Moto G82"]},
-{marca:"Xiaomi",modelo:"Redmi Note 12 Pro 5G",adaptacoes:["Galaxy A54","Galaxy A55","Moto G84"]},
-{marca:"Xiaomi",modelo:"Redmi Note 13•13 Pro",adaptacoes:["Redmi MI 13T","Redmi MI 13T Pro","Redmi Note 14"]},
-{marca:"Xiaomi",modelo:"Redmi Note 13 Pro Plus",adaptacoes:["Sem Adaptação"]},
-{marca:"Xiaomi",modelo:"Redmi Note 14",adaptacoes:["Sem Adaptação"]},
-{marca:"Xiaomi",modelo:"Redmi Note 14 Pro•14 Pro Plus",adaptacoes:["Sem Adaptação"]},
-{marca:"Xiaomi",modelo:"Poco X3•X3 Pro",adaptacoes:["Poco X3 GT","Poco X4","Poco X4 Pro","Poco X4 GT","Galaxy A71","Galaxy M51","Galaxy S10 Lite","Redmi Note 10 Pro","Redmi Note 11 Pro","Redmi Mi 11i","LG K61"]},
-{marca:"Xiaomi",modelo:"Poco X4•X4 Pro",adaptacoes:["Poco X4 GT"]},
-{marca:"Xiaomi",modelo:"Poco X5",adaptacoes:["Redmi Note 12"]},
-{marca:"Xiaomi",modelo:"Poco X5 Pro",adaptacoes:["Redmi Note 12 Pro","Poco F5 Pro"]},
-{marca:"Xiaomi",modelo:"Poco X6•X6 Pro",adaptacoes:["Redmi Note 10 Pro","Redmi Note 11 Pro","Poco X7 Pro"]},
-{marca:"Xiaomi",modelo:"Poco X7 Pro",adaptacoes:["Poco X6 Pro","Redmi Note 10 Pro","Redmi Note 11 Pro"]},
-{marca:"Xiaomi",modelo:"Poco F1",adaptacoes:["Sem Adaptação"]},
-{marca:"Xiaomi",modelo:"Poco F3",adaptacoes:["Poco F4","Poco F5","Redmi Note 11 5G"]},
-{marca:"Xiaomi",modelo:"Poco F5 Pro",adaptacoes:["Poco X5 Pro","Redmi Note 12 Pro"]},
-{marca:"Xiaomi",modelo:"Poco F6•F6 Pro",adaptacoes:["Poco X6","Poco X6 Pro"]},
-{marca:"Xiaomi",modelo:"Poco F7",adaptacoes:["iPhone 16 Pro Max"]},
-{marca:"Xiaomi",modelo:"Poco C3",adaptacoes:["Realme C33"]},
-{marca:"Xiaomi",modelo:"Poco C65",adaptacoes:["Redmi 13C"]},
-{marca:"Xiaomi",modelo:"Poco C75",adaptacoes:["Redmi 14C"]},
-{marca:"Xiaomi",modelo:"Poco M2",adaptacoes:["Galaxy A22 4G","Galaxy A33","Galaxy A32 4G"]},
-{marca:"Xiaomi",modelo:"Poco M3",adaptacoes:["Galaxy A32 5G","Redmi 9T"]},
-{marca:"Xiaomi",modelo:"Poco M3 Pro",adaptacoes:["Redmi 10","Redmi 10 Prime","Moto G14","Moto G54","Moto G34","Moto G42"]},
-{marca:"Xiaomi",modelo:"Poco M4",adaptacoes:["Moto E13","Poco M5","Redmi 9A","Redmi 9i","Redmi 9C","Redmi 9A Sport","Redmi 10A","Redmi A1","Redmi A1+","Redmi A2","Redmi 11 Prime","Galaxy A02"]},
-{marca:"Xiaomi",modelo:"Poco M6 5G",adaptacoes:["Redmi 13C"]},
-{marca:"Xiaomi",modelo:"Poco M6 Pro",adaptacoes:["Redmi 12"]},
-{marca:"Xiaomi",modelo:"10 Lite",adaptacoes:["Moto E13"]},
-{marca:"Xiaomi",modelo:"14T",adaptacoes:["Xiaomi 12T"]},
-{marca:"Xiaomi",modelo:"Mi 11 Lite",adaptacoes:["Sem Adaptação"]},
-{marca:"Xiaomi",modelo:"Mi 12 Lite",adaptacoes:["Sem Adaptação"]},
-
-/* ================= INFINIX ================= */
-{marca:"Infinix",modelo:"Smart 7",adaptacoes:["Galaxy A03","Galaxy A04","Moto E7","Moto G9"]},
-{marca:"Infinix",modelo:"Smart 8",adaptacoes:["Moto G04","Moto G24","Redmi Note 13 Pro"]},
-{marca:"Infinix",modelo:"Smart 8 Pro",adaptacoes:["Moto G04","Moto G24","Redmi Note 13 Pro"]},
-{marca:"Infinix",modelo:"Hot 11",adaptacoes:["Galaxy A13","Moto G9 Power","Moto G200"]},
-{marca:"Infinix",modelo:"Hot 11S",adaptacoes:["Moto G200"]},
-{marca:"Infinix",modelo:"Hot 20 5G",adaptacoes:["Moto G9","Moto G8 Power Lite"]},
-{marca:"Infinix",modelo:"Hot 20i",adaptacoes:["Moto G8 Power Lite","Samsung A20S"]},
-{marca:"Infinix",modelo:"Hot 30",adaptacoes:["Moto G200"]},
-{marca:"Infinix",modelo:"Hot 30i",adaptacoes:["Moto G200"]},
-{marca:"Infinix",modelo:"Hot 40",adaptacoes:["Moto G13","Moto G24"]},
-{marca:"Infinix",modelo:"Hot 40i",adaptacoes:["Galaxy A73","Moto G04","Moto G24"]},
-{marca:"Infinix",modelo:"Note 12 Pro 5G",adaptacoes:["Galaxy A80"]},
-{marca:"Infinix",modelo:"Note 30 5G",adaptacoes:["Moto G200"]},
-{marca:"Infinix",modelo:"Note 50",adaptacoes:["Moto G9+"]},
-{marca:"Infinix",modelo:"Note 60i",adaptacoes:["Moto G15"]},
-
-/* ================= Realme ================= */
-{marca:"Realme",modelo:"7",adaptacoes:["Sem Adaptação"]},
-{marca:"Realme",modelo:"8",adaptacoes:["Sem Adaptação"]},
-{marca:"Realme",modelo:"C35",adaptacoes:["Moto G8 Power Lite","Samsung A12"]},
-{marca:"Realme",modelo:"Note 50",adaptacoes:["Galaxy A05","Redmi 13C"]},
-
-/* ================= Asus ================= */
-{marca:"Asus",modelo:"Zenfone Max Shot",adaptacoes:["Sem Adaptação"]},
-{marca:"Asus",modelo:"Zenfone 6",adaptacoes:["Galaxy A51","Galaxy S21 FE"]},
-
-/* ================= Nokia ================= */
-{marca:"Nokia",modelo:"TA-1263",adaptacoes:["Moto Z3 Play"]},
-{marca:"Nokia",modelo:"2.4",adaptacoes:["Moto G9","Moto G9 Play"]},
-
-/* ================= Itel ================= */
-{marca:"Itel",modelo:"A50",adaptacoes:["Galaxy A13","Moto G9","Moto G9 Play"]},
-{marca:"Itel",modelo:"A70",adaptacoes:["Galaxy A22 5G","Galaxy A12","Galaxy A70"]},
-
-/* ================= Tecno ================= */
-{marca:"Tecno",modelo:"KG5J",adaptacoes:["Moto G9 Play"]},
-{marca:"Tecno",modelo:"Pop 7",adaptacoes:["Moto G8 Power Lite"]},
-
-/* ================= Oscal ================= */
-{marca:"Oscal",modelo:"C80",adaptacoes:["Moto G8 Power Lite"]},
-
-/* ================= Lg ================= */
-{marca:"Lg",modelo:"K11",adaptacoes:["Sem Adaptação"]},
-
-/* ================= Oppo ================= */
-{marca:"Oppo",modelo:"A40",adaptacoes:["Morotola G05•G15"]},
-
-/* ================= Jovi ================= */
-{marca:"Jovi",modelo:"V2445",adaptacoes:["Moro G05•G15"]},
-{marca:"Jovi",modelo:"Y29",adaptacoes:["Moro G56"]},
-
-];
-
-// ===== TEMA =====
-const themeToggle = document.getElementById('themeToggle');
-const savedTheme = localStorage.getItem('theme') || 'light';
-document.body.setAttribute('data-theme', savedTheme);
-
-themeToggle.addEventListener('click', () => {
-  const current = document.body.getAttribute('data-theme');
-  const newTheme = current === 'light' ? 'dark' : 'light';
-  document.body.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
-});
-
-// ===== SISTEMA DE ABAS =====
-function switchTab(tabName) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-  
-  document.getElementById(tabName).classList.add('active');
-  event.target.classList.add('active');
+function brl(n){
+  return "R$ " + Number(n).toFixed(2).replace(".",",").replace(/\B(?=(\d{3})+(?!\d))/g,".");
 }
 
-// ===== ABA 1: PESQUISA =====
-const normalizar = (txt) => txt.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
-
-document.getElementById('busca').addEventListener('input', (e) => {
-  const busca = e.target.value;
-  const resultado = document.getElementById('resultado');
-  
-  if (!busca) {
-    resultado.innerHTML = `
-      <div class="vazio">
-        <i class="fas fa-mobile-alt"></i>
-        <p>Digite o modelo ou fabricante para buscar compatibilidade de películas.</p>
-      </div>`;
-    return;
-  }
-
-  const f = normalizar(busca);
-  let resultados = dados.filter(d => normalizar(d.marca).includes(f));
-  
-  if (!resultados.length) {
-    resultados = dados.filter(d => normalizar(d.modelo).includes(f));
-  }
-  
-  if (!resultados.length) {
-    resultados = dados.filter(d => d.adaptacoes && d.adaptacoes.some(a => normalizar(a).includes(f)));
-  }
-
-  if (!resultados.length) {
-    resultado.innerHTML = `
-      <div class="vazio">
-        <i class="fas fa-search"></i>
-        <p>Nenhuma compatibilidade encontrada para "<strong>${busca}</strong>".</p>
-      </div>`;
-    return;
-  }
-
-  resultado.innerHTML = resultados.map((d, i) => `
-    <div class="card" style="animation-delay:${i * 0.05}s">
-      <div class="card-header">
-        <img class="brand-logo" src="logos/${d.marca.toLowerCase()}.png" alt="${d.marca}"
-             onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>📱</text></svg>'">
-        <div class="card-info">
-          <div class="modelo">${d.modelo}</div>
-          <div class="marca">${d.marca}</div>
-        </div>
-      </div>
-      <div class="adaptacoes">
-        <div class="adaptacoes-title">
-          <i class="fas fa-exchange-alt"></i>
-          Adaptação compatível
-        </div>
-        <div class="adaptacoes-list">
-          ${d.adaptacoes && d.adaptacoes[0] !== "Sem Adaptação" 
-            ? d.adaptacoes.map(a => `<span class="tag">${a}</span>`).join('')
-            : '<span class="no-adapt">Sem adaptações compatíveis</span>'}
-        </div>
-      </div>
-    </div>
-  `).join('');
+/* monta linhas das cédulas */
+valores.forEach(v=>{
+  const row=document.createElement("tr");
+  row.innerHTML=`
+    <td>R$ ${v.toFixed(2).replace(".",",")}</td>
+    <td>
+      <input type="number" min="0" step="1" data-v="${v}" data-nota="nota_${v}" placeholder="0">
+      <span class="qtd-print"></span>
+    </td>
+    <td class="linhaTotal">R$ 0,00</td>`;
+  tbody.appendChild(row);
 });
 
-// ===== ABA 2: GERADOR DE PLACAS =====
-const cores = {
-  samsung: { fundo:"#1428a0", texto:"#ffffff" },
-  motorola: { fundo:"#001526", texto:"#ffffff" },
-  xiaomi: { fundo:"#ff6a08", texto:"#000000" },
-  apple: { fundo:"#dcdcdc", texto:"#000000" },
-  asus: { fundo:"#000000", texto:"#ffffff" },
-  infinix: { fundo:"#8ec142", texto:"#000000" },
-  itel: { fundo:"#fd0137", texto:"#ffffff" },
-  lg: { fundo:"#a50034", texto:"#ffffff" },
-  nokia: { fundo:"#1c4598", texto:"#ffffff" },
-  oppo: { fundo:"#006b33", texto:"#ffffff" },
-  oscal: { fundo:"#9c40dd", texto:"#ffffff" },
-  realme: { fundo:"#ffc913", texto:"#000000" },
-  tecno: { fundo:"#0064fe", texto:"#ffffff" },
-  jovi: { fundo:"#1c4598", texto:"#ffffff" }
-};
-
-// Popula fabricantes
-const fabricantes = [...new Set(dados.map(d => d.marca))].sort();
-const fabSelect = document.getElementById('fabricante');
-fabricantes.forEach(f => {
-  const opt = document.createElement('option');
-  opt.value = f;
-  opt.textContent = f;
-  fabSelect.appendChild(opt);
+/* inputs */
+const allInputs=document.querySelectorAll("input");
+allInputs.forEach(i=>{
+  i.addEventListener("input",()=>{calc();autoSave();});
 });
 
-// Popula modelos ao selecionar fabricante
-fabSelect.addEventListener('change', () => {
-  const modeloSelect = document.getElementById('modelo');
-  modeloSelect.innerHTML = '<option value="">Modelo</option>';
-  modeloSelect.disabled = !fabSelect.value;
-  
-  if (fabSelect.value) {
-    const modelos = dados.filter(d => d.marca === fabSelect.value).map(d => d.modelo);
-    modelos.forEach(m => {
-      const opt = document.createElement('option');
-      opt.value = m;
-      opt.textContent = m;
-      modeloSelect.appendChild(opt);
-    });
-  }
-});
+const elTotalContado=document.getElementById("totalContado");
+const elResDin=document.getElementById("resultadoDinheiro");
+const elResCar=document.getElementById("resultadoCartao");
+const elAb=document.getElementById("abertura");
+const elSup=document.getElementById("suprimento");
+const elSa=document.getElementById("sangria");
+const elSd=document.getElementById("sistemaDinheiro");
+const elM1=document.getElementById("maq1");
+const elM2=document.getElementById("maq2");
+const elSc=document.getElementById("sistemaCartao");
+const elRsDin=document.getElementById("rsDinheiro");
+const elRsCar=document.getElementById("rsCartao");
+const elRsGer=document.getElementById("rsGeral");
+const elRsDif=document.getElementById("rsDif");
 
-function roundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + w - r, y);
-  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-  ctx.lineTo(x + w, y + h - r);
-  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-  ctx.lineTo(x + r, y + h);
-  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-  ctx.lineTo(x, y + r);
-  ctx.quadraticCurveTo(x, y, x + r, y);
-  ctx.closePath();
+function setResultado(el, estado, label, valor, icon){
+  el.classList.remove("ok","sobra","falta");
+  if(estado) el.classList.add(estado);
+  el.querySelector(".res-label").innerText=label;
+  el.querySelector(".res-value").innerText=valor;
+  el.querySelector(".res-icon").innerHTML=`<i class="fa-solid ${icon}"></i>`;
 }
 
-function gerarImagem() {
-  const fabricante = document.getElementById('fabricante').value;
-  const modelo = document.getElementById('modelo').value;
-  
-  if (!fabricante || !modelo) {
-    alert("Selecione a fabricante e o modelo!");
-    return;
-  }
+function calc(){
+  let totalDin=0;
 
-  const achado = dados.find(d => d.marca === fabricante && d.modelo === modelo);
-  if (!achado) {
-    alert("Modelo não encontrado!");
-    return;
-  }
-
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext("2d");
-  const est = cores[achado.marca.toLowerCase()] || { fundo:"#fff", texto:"#000" };
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = est.fundo;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Bordas
-  const b = 25;
-  ctx.fillStyle = "#0051ff";
-  ctx.fillRect(0, 0, canvas.width, b);
-  ctx.fillRect(0, 0, b, canvas.height);
-  ctx.fillStyle = "#ff7a00";
-  ctx.fillRect(0, canvas.height - b, canvas.width, b);
-  ctx.fillRect(canvas.width - b, 0, b, canvas.height);
-
-  ctx.textAlign = "center";
-  ctx.fillStyle = est.texto;
-  ctx.textBaseline = "alphabetic";
-
-  let y = b + 40;
-
-  // Caixa Logo
-  const boxW = 420, boxH = 130;
-  const boxX = (canvas.width - boxW) / 2;
-  const boxY = y;
-
-  ctx.shadowColor = "rgba(0,0,0,0.35)";
-  ctx.shadowBlur = 18;
-  ctx.shadowOffsetY = 8;
-  ctx.fillStyle = "#fff";
-  roundRect(ctx, boxX, boxY, boxW, boxH, 28);
-  ctx.fill();
-  ctx.shadowColor = "transparent";
-
-  const logo = new Image();
-  logo.src = `logo2/${achado.marca.toLowerCase()}.png`;
-  logo.onload = () => {
-    const imgW = boxW - 80;
-    const imgH = logo.height * (imgW / logo.width);
-    ctx.drawImage(logo, boxX + (boxW - imgW) / 2, boxY + (boxH - imgH) / 2, imgW, imgH);
-  };
-
-  y = boxY + boxH + 100;
-
-  // Modelo
-  let tamanho = 130;
-  do {
-    ctx.font = `bold ${tamanho}px Arial`;
-    tamanho--;
-  } while (ctx.measureText(achado.modelo).width > canvas.width - 120);
-
-  ctx.fillStyle = est.texto;
-  ctx.fillText(achado.modelo, canvas.width / 2, y);
-
-  y += 120;
-
-  // Título
-  ctx.font = "bold 60px Arial";
-  ctx.fillText("Adaptações:", canvas.width / 2, y);
-
-  y += 50;
-
-  // Adaptações - Sistema inteligente
-  const areaAltura = canvas.height - y - b - 20;
-  const areaLargura = canvas.width - 100;
-  const numAdaptacoes = achado.adaptacoes.length;
-  
-  let colunas;
-  if (numAdaptacoes <= 5) colunas = 1;
-  else if (numAdaptacoes <= 10) colunas = 2;
-  else if (numAdaptacoes <= 18) colunas = 3;
-  else colunas = 4;
-  
-  const linhasPorCol = Math.ceil(numAdaptacoes / colunas);
-  const gap = 35;
-  const larguraCol = (areaLargura - (gap * (colunas - 1))) / colunas;
-  
-  let fonte = 70;
-  let espacamento = fonte * 0.45;
-  
-  while ((linhasPorCol * (fonte + espacamento)) > areaAltura && fonte > 30) {
-    fonte -= 2;
-    espacamento = fonte * 0.45;
-  }
-  
-  ctx.font = `bold ${fonte}px Arial`;
-  let textoMuitoLongo = true;
-  
-  while (textoMuitoLongo && fonte > 30) {
-    textoMuitoLongo = false;
-    ctx.font = `bold ${fonte}px Arial`;
-    
-    achado.adaptacoes.forEach(t => {
-      if (ctx.measureText(t).width > larguraCol - 15) textoMuitoLongo = true;
-    });
-    
-    if (textoMuitoLongo) {
-      fonte -= 2;
-      espacamento = fonte * 0.45;
-    }
-  }
-  
-  ctx.font = `bold ${fonte}px Arial`;
-  const inicioX = (canvas.width - ((larguraCol * colunas) + (gap * (colunas - 1)))) / 2;
-  const alturaTotal = linhasPorCol * (fonte + espacamento) - espacamento;
-  const yInicio = y + (areaAltura - alturaTotal) / 2;
-  
-  achado.adaptacoes.forEach((t, i) => {
-    const col = Math.floor(i / linhasPorCol);
-    const lin = i % linhasPorCol;
-    const x = inicioX + col * (larguraCol + gap) + larguraCol / 2;
-    const yy = yInicio + lin * (fonte + espacamento);
-    ctx.fillText(t, x, yy);
+  document.querySelectorAll("#linhas tr").forEach(tr=>{
+    const i=tr.querySelector("input");
+    const v=+i.dataset.v;
+    const q=+i.value||0;
+    const s=v*q;
+    tr.querySelector(".linhaTotal").innerText=brl(s);
+    tr.querySelector(".qtd-print").innerText=q?q:"";
+    totalDin+=s;
   });
-}
+  elTotalContado.innerText=brl(totalDin);
 
-function baixarImagem() {
-  const fabricante = document.getElementById('fabricante').value;
-  const modelo = document.getElementById('modelo').value;
-  
-  if (!fabricante || !modelo) {
-    alert("Gere a imagem primeiro!");
-    return;
+  /* DINHEIRO */
+  const ab=+elAb.value||0;
+  const sup=+elSup.value||0;
+  const sa=+elSa.value||0;
+  const sdRaw=elSd.value;
+
+  let difDin=0;
+  if(sdRaw!==""){
+    const sd=+sdRaw||0;
+    const esperado=ab+sup-sa+sd;
+    difDin=totalDin-esperado;
+    if(Math.abs(difDin)<0.005){
+      setResultado(elResDin,"ok","Dinheiro","CONFERIDO • R$ 0,00","fa-circle-check");
+    }else if(difDin>0){
+      setResultado(elResDin,"sobra","Sobra no caixa","+ "+brl(difDin),"fa-arrow-trend-up");
+    }else{
+      setResultado(elResDin,"falta","Falta no caixa","− "+brl(Math.abs(difDin)),"fa-triangle-exclamation");
+    }
+  }else{
+    setResultado(elResDin,null,"Status","Informe os valores","fa-circle-info");
   }
 
-  const canvas = document.getElementById('canvas');
-  const a = document.createElement("a");
-  a.download = `${fabricante} ${modelo}.png`;
-  a.href = canvas.toDataURL("image/png");
-  a.click();
+  /* CARTAO */
+  const m1=+elM1.value||0;
+  const m2=+elM2.value||0;
+  const scRaw=elSc.value;
+  let totalCar=m1+m2;
+  let difCar=0;
+  if(scRaw!==""){
+    const sc=+scRaw||0;
+    difCar=totalCar-sc;
+    if(Math.abs(difCar)<0.005){
+      setResultado(elResCar,"ok","Cartão","CONFERIDO • R$ 0,00","fa-circle-check");
+    }else if(difCar>0){
+      setResultado(elResCar,"sobra","Sobra no cartão","+ "+brl(difCar),"fa-arrow-trend-up");
+    }else{
+      setResultado(elResCar,"falta","Falta no cartão","− "+brl(Math.abs(difCar)),"fa-triangle-exclamation");
+    }
+  }else{
+    setResultado(elResCar,null,"Status","Informe os valores","fa-circle-info");
+  }
+
+  /* RESUMO */
+  elRsDin.innerText=brl(totalDin);
+  elRsCar.innerText=brl(totalCar);
+  elRsGer.innerText=brl(totalDin+totalCar);
+  const difTotal=difDin+difCar;
+  elRsDif.innerText=(difTotal>=0?"+ ":"− ")+brl(Math.abs(difTotal));
+  elRsDif.style.color = Math.abs(difTotal)<0.005 ? "var(--text)" : (difTotal>0 ? "var(--verde)" : "var(--vermelho)");
 }
 
-// Inicializa
-document.getElementById('resultado').innerHTML = `
-  <div class="vazio">
-    <i class="fas fa-mobile-alt"></i>
-    <p>Digite o modelo ou fabricante para buscar compatibilidade de películas.</p>
-  </div>`;
+/* RELÓGIO */
+function tick(){
+  const d=new Date();
+  const pad=n=>String(n).padStart(2,"0");
+  document.getElementById("hora").innerText=`${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  const dias=["DOM","SEG","TER","QUA","QUI","SEX","SAB"];
+  document.getElementById("data").innerText=`${dias[d.getDay()]} · ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+}
+tick();setInterval(tick,1000);
+
+/* PERSISTÊNCIA localStorage */
+function snapshot(){
+  const data={};
+  document.querySelectorAll("#linhas input").forEach(i=>{
+    data[i.dataset.nota]=i.value;
+  });
+  ["abertura","suprimento","sangria","sistemaDinheiro","maq1","maq2","sistemaCartao"].forEach(id=>{
+    data[id]=document.getElementById(id).value;
+  });
+  return data;
+}
+
+function autoSave(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot())); }catch(e){}
+}
+
+function carregar(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const data=JSON.parse(raw);
+    document.querySelectorAll("#linhas input").forEach(i=>{
+      if(data[i.dataset.nota]!==undefined) i.value=data[i.dataset.nota];
+    });
+    ["abertura","suprimento","sangria","sistemaDinheiro","maq1","maq2","sistemaCartao"].forEach(id=>{
+      if(data[id]!==undefined) document.getElementById(id).value=data[id];
+    });
+  }catch(e){}
+}
+
+function toast(msg, ok=true){
+  const t=document.getElementById("toast");
+  document.getElementById("toastMsg").innerText=msg;
+  t.querySelector("i").className = ok ? "fa-solid fa-circle-check" : "fa-solid fa-circle-exclamation";
+  t.querySelector("i").style.color = ok ? "var(--verde)" : "var(--vermelho)";
+  t.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t=setTimeout(()=>t.classList.remove("show"),1800);
+}
+
+function salvarManual(){
+  autoSave();
+  toast("Fechamento salvo no navegador");
+}
+
+function limparTudo(){
+  if(!confirm("Deseja limpar todos os campos? Esta ação não pode ser desfeita.")) return;
+  document.querySelectorAll("input[type=number]").forEach(i=>i.value="");
+  localStorage.removeItem(STORAGE_KEY);
+  calc();
+  toast("Todos os campos foram limpos");
+}
+
+/* INIT */
+carregar();
+calc();
 </script>
 
 </body>
 </html>
-
-
