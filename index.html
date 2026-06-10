@@ -16,7 +16,6 @@
   --laranja: #ff6a00;
   --laranja-hover: #e55f00;
   
-  /* Light Mode */
   --bg-primary: #f0f4ff;
   --bg-secondary: #e8eeff;
   --bg-gradient-1: rgba(219, 231, 255, 0.9);
@@ -79,7 +78,6 @@ body {
   transition: background 0.4s ease, color 0.3s ease;
 }
 
-/* ===== SISTEMA DE ABAS ===== */
 .tabs-container {
   position: sticky;
   top: 0;
@@ -118,6 +116,10 @@ body {
   border-radius: 0 50px 50px 0;
 }
 
+.tab-button:nth-child(2) {
+  border-radius: 0;
+}
+
 .tab-button:hover {
   background: rgba(255, 255, 255, 0.25);
   transform: translateY(-2px);
@@ -141,7 +143,6 @@ body {
   display: block;
 }
 
-/* ===== THEME TOGGLE ===== */
 .theme-toggle {
   position: fixed;
   top: 80px;
@@ -177,7 +178,6 @@ body {
   display: none;
 }
 
-/* ===== ABA 1 - PESQUISA ===== */
 .pesquisa-header {
   text-align: center;
   padding: 50px 20px 40px;
@@ -379,7 +379,6 @@ body {
   opacity: 0.6;
 }
 
-/* ===== ABA 2 - PLACA ===== */
 .placa-container {
   min-height: calc(100vh - 100px);
 }
@@ -418,7 +417,8 @@ body {
 }
 
 .select-container select,
-.select-container button {
+.select-container button,
+.input-modelo {
   padding: 12px 16px;
   font-size: 14px;
   font-weight: 600;
@@ -442,6 +442,19 @@ body {
   background-repeat: no-repeat;
   background-position: right 12px center;
   padding-right: 35px;
+}
+
+.input-modelo {
+  flex: 1;
+  min-width: 150px;
+  max-width: 200px;
+  cursor: text;
+  white-space: normal;
+}
+
+.input-modelo:focus {
+  outline: 2px solid var(--azul);
+  box-shadow: 0 4px 16px rgba(13, 59, 255, 0.2);
 }
 
 .select-container button {
@@ -489,7 +502,6 @@ canvas {
   display: block;
 }
 
-/* ===== FOOTER ===== */
 .footer {
   position: fixed;
   bottom: 0;
@@ -530,7 +542,6 @@ canvas {
   }
 }
 
-/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .tab-button {
     padding: 12px 20px;
@@ -538,12 +549,17 @@ canvas {
     border-radius: 50px !important;
   }
   
+  .tab-button:nth-child(2) {
+    border-radius: 0 !important;
+  }
+  
   .select-container {
     flex-wrap: wrap;
   }
   
   .select-container select,
-  .select-container button {
+  .select-container button,
+  .input-modelo {
     flex: 1 1 45%;
   }
 }
@@ -552,25 +568,26 @@ canvas {
 
 <body data-theme="light">
 
-<!-- Theme Toggle -->
 <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">
   <i class="fas fa-sun"></i>
   <i class="fas fa-moon"></i>
 </button>
 
-<!-- Sistema de Abas -->
 <div class="tabs-container">
-  <button class="tab-button active" onclick="switchTab('pesquisa')">
+  <button class="tab-button active" onclick="switchTab('pesquisa', this)">
     <i class="fas fa-search"></i>
     Pesquisa Adaptações
   </button>
-  <button class="tab-button" onclick="switchTab('placa')">
+  <button class="tab-button" onclick="switchTab('placa', this)">
     <i class="fas fa-image"></i>
-    Placa Adaptações
+    Placa Película
+  </button>
+  <button class="tab-button" onclick="switchTab('placa-capa', this)">
+    <i class="fas fa-layer-group"></i>
+    Placa de Capa
   </button>
 </div>
 
-<!-- ABA 1: Pesquisa Adaptações -->
 <div id="pesquisa" class="tab-content active">
   <div class="pesquisa-header">
     <div class="logo-container">
@@ -597,7 +614,6 @@ canvas {
   </div>
 </div>
 
-<!-- ABA 2: Placa Adaptações -->
 <div id="placa" class="tab-content">
   <div class="placa-container">
     <div class="topo-fixo">
@@ -615,12 +631,12 @@ canvas {
           <option value="">Modelo</option>
         </select>
 
-        <button class="btn-gerar" onclick="gerarImagem()">
+        <button class="btn-gerar" onclick="gerarImagemPelicula()">
           <i class="fas fa-wand-magic-sparkles"></i>
           Gerar
         </button>
 
-        <button class="btn-download" onclick="baixarImagem()">
+        <button class="btn-download" onclick="baixarImagemPelicula()">
           <i class="fas fa-download"></i>
           Baixar
         </button>
@@ -629,16 +645,57 @@ canvas {
 
     <div class="area-canvas">
       <div class="canvas-wrapper">
-        <canvas id="canvas" width="1181" height="1181"></canvas>
+        <canvas id="canvas" width="591" height="591"></canvas>
+        <p style="margin-top: 15px; font-size: 13px; color: var(--text-muted); font-weight: 500;">
+          <i class="fas fa-ruler-combined"></i> Tamanho de saída: 591x591px (5x5 cm a 300 DPI)
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="placa-capa" class="tab-content">
+  <div class="placa-container">
+    <div class="topo-fixo">
+      <h2>
+        <i class="fas fa-layer-group"></i>
+        Placa de Capa
+      </h2>
+
+      <div class="select-container" style="flex-wrap: wrap; gap: 10px; justify-content: center;">
+        <select id="fabricanteCapa" style="flex: 1; min-width: 150px; max-width: 200px;">
+          <option value="">Fabricante</option>
+        </select>
+
+        <input type="text" id="linha1Capa" class="input-modelo" placeholder="Linha 1 do modelo" maxlength="30" style="flex: 1; min-width: 150px; max-width: 200px;">
+        <input type="text" id="linha2Capa" class="input-modelo" placeholder="Linha 2 do modelo" maxlength="30" style="flex: 1; min-width: 150px; max-width: 200px;">
+        <input type="text" id="linha3Capa" class="input-modelo" placeholder="Linha 3 do modelo" maxlength="30" style="flex: 1; min-width: 150px; max-width: 200px;">
+
+        <button class="btn-gerar" onclick="gerarImagemCapa()" style="flex: 0 0 auto; min-width: 110px;">
+          <i class="fas fa-wand-magic-sparkles"></i>
+          Gerar
+        </button>
+
+        <button class="btn-download" onclick="baixarImagemCapa()" style="flex: 0 0 auto; min-width: 110px;">
+          <i class="fas fa-download"></i>
+          Baixar
+        </button>
+      </div>
+    </div>
+
+    <div class="area-canvas">
+      <div class="canvas-wrapper">
+        <canvas id="canvasCapa" width="591" height="591"></canvas>
+        <p style="margin-top: 15px; font-size: 13px; color: var(--text-muted); font-weight: 500;">
+          <i class="fas fa-ruler-combined"></i> Tamanho de saída: 591x591px (5x5 cm a 300 DPI)
+        </p>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// ===== DADOS =====
 const dados = [
-
 /* ================= SAMSUNG ================= */
 {marca:"Samsung",modelo:"Galaxy J2 Prime",adaptacoes:["Sem Adaptação"]},
 {marca:"Samsung",modelo:"Galaxy J2 Core",adaptacoes:["Sem Adaptação"]},
@@ -664,8 +721,31 @@ const dados = [
 {marca:"Samsung",modelo:"Galaxy A9 2018",adaptacoes:["Sem Adaptação"]},
 {marca:"Samsung",modelo:"Galaxy A01",adaptacoes:["Xiaomi Mi Play"]},
 {marca:"Samsung",modelo:"Galaxy A01 Core",adaptacoes:["Sem Adaptação"]},
+{marca:"Samsung",modelo:"Galaxy A02S",adaptacoes:["Galaxy A02","Galaxy A03","Galaxy A12","Galaxy A13","Galaxy M12"]},
+{marca:"Samsung",modelo:"Galaxy A03",adaptacoes:["Galaxy A02","Galaxy A02S","Galaxy A03S","Galaxy A03 Core","Galaxy A04","Galaxy A04S","Galaxy A04E","Galaxy A12","Galaxy A13"]},
+{marca:"Samsung",modelo:"Galaxy A03S",adaptacoes:["Galaxy A02","Galaxy A02S","Galaxy A03","Galaxy A03 Core","Galaxy A04","Galaxy A04S","Galaxy A04E","Galaxy A12","Galaxy A13"]},
+{marca:"Samsung",modelo:"Galaxy A03 Core",adaptacoes:["Galaxy A02","Galaxy A02S","Galaxy A03","Galaxy A03S","Galaxy A04","Galaxy A04S","Galaxy A04E","Galaxy A12","Galaxy A13"]},
+{marca:"Samsung",modelo:"Galaxy A04",adaptacoes:["Galaxy A02","Galaxy A02S","Galaxy A03","Galaxy A03S","Galaxy A03 Core","Galaxy A04S","Galaxy A04E","Galaxy A12","Galaxy A13","Galaxy M13"]},
+{marca:"Samsung",modelo:"Galaxy A04S",adaptacoes:["Galaxy A02","Galaxy A02S","Galaxy A03","Galaxy A03S","Galaxy A03 Core","Galaxy A04","Galaxy A04E","Galaxy A12","Galaxy A13","Galaxy M13"]},
+{marca:"Samsung",modelo:"Galaxy A04E",adaptacoes:["Galaxy A02","Galaxy A02S","Galaxy A03","Galaxy A03S","Galaxy A03 Core","Galaxy A04","Galaxy A04S","Galaxy A12","Galaxy A13"]},
+{marca:"Samsung",modelo:"Galaxy A07",adaptacoes:["Galaxy A05","Galaxy A06","Redmi 13C","Redmi C65"]},
+{marca:"Samsung",modelo:"Galaxy A10S",adaptacoes:["Galaxy A10","Galaxy M10","Moto G8 Play","Moto G8 Plus","Moto G7","LG K40S","Redmi 8","Redmi 8A"]},
+{marca:"Samsung",modelo:"Galaxy A16 4G",adaptacoes:["Galaxy A14","Galaxy A17","Galaxy M14"]},
+{marca:"Samsung",modelo:"Galaxy A21S",adaptacoes:["Galaxy A21","Galaxy A71","Moto G22","Redmi Note 11","Poco X3"]},
+{marca:"Samsung",modelo:"Galaxy A22",adaptacoes:["Galaxy A32 4G","Galaxy M31","Galaxy M32","Galaxy A33","Galaxy M22"]},
+{marca:"Samsung",modelo:"Galaxy A23 5G",adaptacoes:["Galaxy A12","Galaxy M12","Galaxy A02","Galaxy A03","Galaxy A03S","Galaxy A04","Galaxy A04E","Galaxy A04S","Galaxy A70","Galaxy A32","Galaxy A22"]},
+{marca:"Samsung",modelo:"Galaxy A30",adaptacoes:["Galaxy A20","Galaxy A50","Galaxy A30S","Galaxy A50S","Galaxy M31","Galaxy M30S"]},
+{marca:"Samsung",modelo:"Galaxy A30S",adaptacoes:["Galaxy A20","Galaxy A30","Galaxy A50","Galaxy A50S","Galaxy M31","Galaxy M30S"]},
+{marca:"Samsung",modelo:"Galaxy A31",adaptacoes:["Galaxy A22 4G","Galaxy A32 4G","Galaxy M31","Galaxy M32","Galaxy A33","Galaxy M22"]},
+{marca:"Samsung",modelo:"Galaxy A32",adaptacoes:["Galaxy A22 4G","Galaxy A33","Galaxy M32","Poco M2"]},
+{marca:"Samsung",modelo:"Galaxy A32 5G",adaptacoes:["Galaxy A22 5G","Galaxy M14","Galaxy A14"]},
+{marca:"Samsung",modelo:"Galaxy A50S",adaptacoes:["Galaxy A20","Galaxy A30","Galaxy A50","Galaxy A30S"]},
+{marca:"Samsung",modelo:"Galaxy A52",adaptacoes:["Galaxy A51","Galaxy A52S","Galaxy A53 5G","Galaxy S20 FE"]},
+{marca:"Samsung",modelo:"Galaxy A52S",adaptacoes:["Galaxy A51","Galaxy A52","Galaxy A53 5G","Galaxy S20 FE"]},
+{marca:"Samsung",modelo:"Galaxy A53 5G",adaptacoes:["Galaxy A52","Galaxy A52S","Galaxy S20 FE","Moto Edge 30","Poco M4 Pro 4G"]},
+{marca:"Samsung",modelo:"Galaxy A55 5G",adaptacoes:["Galaxy A35","Galaxy M35","Galaxy A56"]},
 {marca:"Samsung",modelo:"Galaxy A02",adaptacoes:["Galaxy A02S","Galaxy A03","Galaxy A03S","Galaxy A03 Core","Galaxy A04","Galaxy A04S","Galaxy A04E","Galaxy A12","Galaxy A13","Galaxy M23","Galaxy A70","Redmi 9A","Redmi 9A Sport","Redmi 9i","Redmi 9C","Moto E7","Moto E7 Power","Poco M4"]},
-{marca:"Samsung",modelo:"Galaxy A05",adaptacoes:["Galaxy A05S","Redmi 13C","Redmi C65","TCL 40","Realme C33","Realme Note 50","Realme Note 60"]},
+{marca:"Samsung",modelo:"Galaxy A05",adaptacoes:["Galaxy A05S","Galaxy A06","Galaxy A07","Redmi 13C","Redmi C65","TCL 40","Realme C33","Realme Note 50","Realme Note 60"]},
 {marca:"Samsung",modelo:"Galaxy A05S",adaptacoes:["Galaxy A05","Redmi 13C","Redmi C65","TCL 40","Realme C33","Realme Note 50","Realme Note 60"]},
 {marca:"Samsung",modelo:"Galaxy A06",adaptacoes:["Galaxy A05","Galaxy A07","Redmi 13C","Redmi C65"]},
 {marca:"Samsung",modelo:"Galaxy A10",adaptacoes:["Galaxy A10S","Galaxy M10","Moto G8 Play","Moto G8 Plus","Moto G7","LG K40S","Redmi 8","Redmi 8A"]},
@@ -708,7 +788,15 @@ const dados = [
 {marca:"Samsung",modelo:"Galaxy M13",adaptacoes:["Galaxy A13","Galaxy A12","Galaxy A04","Galaxy A04S"]},
 {marca:"Samsung",modelo:"Galaxy M14",adaptacoes:["Galaxy A14","Galaxy A22 5G"]},
 {marca:"Samsung",modelo:"Galaxy M15",adaptacoes:["Galaxy A15","Galaxy A24","Galaxy A25"]},
+{marca:"Samsung",modelo:"Galaxy M10",adaptacoes:["Galaxy A10","Galaxy A10S","Moto G8 Play","Moto G8 Plus"]},
 {marca:"Samsung",modelo:"Galaxy M20",adaptacoes:["Sem Adaptação"]},
+{marca:"Samsung",modelo:"Galaxy M21S",adaptacoes:["Galaxy M31","Galaxy M22","Galaxy M32","Galaxy A31","Galaxy A32 4G"]},
+{marca:"Samsung",modelo:"Galaxy M24",adaptacoes:["Galaxy A15","Galaxy A24","Galaxy A25","Galaxy M15"]},
+{marca:"Samsung",modelo:"Galaxy M25",adaptacoes:["Galaxy A15","Galaxy A24","Galaxy A25","Galaxy M15"]},
+{marca:"Samsung",modelo:"Galaxy M30S",adaptacoes:["Galaxy A20","Galaxy A30","Galaxy A50","Galaxy A30S","Galaxy M31"]},
+{marca:"Samsung",modelo:"Galaxy S20 FE",adaptacoes:["Galaxy A51","Galaxy A52","Galaxy A52S","Galaxy A53 5G"]},
+{marca:"Samsung",modelo:"Galaxy S21 FE",adaptacoes:["Galaxy A54","Galaxy A73","Galaxy S23 FE"]},
+{marca:"Samsung",modelo:"Galaxy S23 FE",adaptacoes:["Galaxy A54","Galaxy S21 FE"]},
 {marca:"Samsung",modelo:"Galaxy M21",adaptacoes:["Galaxy A21","Galaxy A21S"]},
 {marca:"Samsung",modelo:"Galaxy M22",adaptacoes:["Galaxy A22","Galaxy A32 4G"]},
 {marca:"Samsung",modelo:"Galaxy M23",adaptacoes:["Galaxy A13","Galaxy A23","Galaxy A32 5G"]},
@@ -763,8 +851,13 @@ const dados = [
 {marca:"Motorola",modelo:"Moto E5 Play",adaptacoes:["Sem Adaptação"]},
 {marca:"Motorola",modelo:"Moto E5 Plus",adaptacoes:["Sem Adaptação"]},
 {marca:"Motorola",modelo:"Moto E6",adaptacoes:["Sem Adaptação"]},
+{marca:"Motorola",modelo:"Moto E6i",adaptacoes:["Moto E6S","Moto E6 Plus","Moto E7","Moto E20","Moto G9 Play","Moto E7 Power","Galaxy A13","Galaxy A23","Galaxy A12","Moto G30"]},
+{marca:"Motorola",modelo:"Moto E6 Plus",adaptacoes:["Moto E6i","Moto E6S","Moto E7","Moto E20","Moto G9 Play","Moto E7 Power","Galaxy A13","Galaxy A23","Galaxy A12","Moto G30"]},
 {marca:"Motorola",modelo:"Moto E6S",adaptacoes:["Moto E6i","Moto E6 Plus","Moto E7","Moto E20","Moto G9 Play","Moto E7 Power","Galaxy A13","Galaxy A23","Galaxy A12","Moto G30","Moto E20"]},
+{marca:"Motorola",modelo:"Moto E7 Power",adaptacoes:["Moto E7","Galaxy A02","Galaxy A03","Galaxy A12","Galaxy A13","Galaxy M12","Moto E6i","Moto E6 Plus","Moto E6S"]},
 {marca:"Motorola",modelo:"Moto E7",adaptacoes:["Moto E7 Power","Galaxy A02","Galaxy A03","Galaxy A12","Galaxy A13","Galaxy M12"]},
+{marca:"Motorola",modelo:"Moto E14",adaptacoes:["Moto G04","Moto G24","Moto G34"]},
+{marca:"Motorola",modelo:"Moto E30",adaptacoes:["Moto E13","Moto E20","Moto G9 Play","Galaxy A02S","Moto G30","Moto E7 Power","Moto One Fusion","Realme C11","Galaxy A12","Galaxy A70"]},
 {marca:"Motorola",modelo:"Moto E7 Plus",adaptacoes:["Sem Adaptação"]},
 {marca:"Motorola",modelo:"Moto E13",adaptacoes:["Moto E20","Moto E30","Moto G9 Play","Galaxy A02S","Moto G30","Moto E7 Power","Moto One Fusion","Realme C11","Galaxy A12","Galaxy A70"]},
 {marca:"Motorola",modelo:"Moto E14",adaptacoes:["Sem Adaptação"]},
@@ -787,11 +880,26 @@ const dados = [
 {marca:"Motorola",modelo:"Moto G6 Plus",adaptacoes:["Sem Adaptação"]},
 {marca:"Motorola",modelo:"Moto G6 Play",adaptacoes:["Sem Adaptação"]},
 {marca:"Motorola",modelo:"Moto G7",adaptacoes:["Moto G7 Plus"]},
+{marca:"Motorola",modelo:"Moto G7 Plus",adaptacoes:["Moto G7","Moto G8 Power"]},
 {marca:"Motorola",modelo:"Moto G7 Play",adaptacoes:["Sem Adaptação"]},
 {marca:"Motorola",modelo:"Moto G7 Power",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto G8",adaptacoes:["Sem Adaptação"]},
-{marca:"Motorola",modelo:"Moto G8 Play",adaptacoes:["Moto G8 Plus","Moto One Macro"]},
-{marca:"Motorola",modelo:"Moto G8 Power",adaptacoes:["Sem Adaptação"]},
+{marca:"Motorola",modelo:"Moto G8",adaptacoes:["Moto G8 Power Lite","Moto G9 Play"]},
+{marca:"Motorola",modelo:"Moto G8 Plus",adaptacoes:["Moto G8 Play","Moto One Macro","Moto G8 Power"]},
+{marca:"Motorola",modelo:"Moto G8 Power",adaptacoes:["Moto G7 Plus","Moto G8 Plus"]},
+{marca:"Motorola",modelo:"Moto G9 Play",adaptacoes:["Moto G8","Moto G8 Power Lite","Moto G10","Moto G20","Moto G30","Moto E20","Galaxy A12","Moto E6i","Moto E6 Plus","Moto E6S","Moto E7 Power"]},
+{marca:"Motorola",modelo:"Moto G20",adaptacoes:["Moto G10","Moto G10 Power","Moto G30","Moto G8 Power Lite","Galaxy A12","Galaxy A70","Moto G9 Play"]},
+{marca:"Motorola",modelo:"Moto G30",adaptacoes:["Moto G10","Moto G10 Power","Moto G20","Moto G8 Power Lite","Galaxy A12","Galaxy A70","Moto E6i","Moto E6 Plus","Moto E6S","Moto E13","Moto E30"]},
+{marca:"Motorola",modelo:"Moto G41",adaptacoes:["Moto G31","Moto G71","Redmi Note 9S","Redmi Note 9 Pro"]},
+{marca:"Motorola",modelo:"Moto G45",adaptacoes:["Moto G34","Moto G13"]},
+{marca:"Motorola",modelo:"Moto G53 5G",adaptacoes:["Moto G23","Moto G13","Moto G53"]},
+{marca:"Motorola",modelo:"Moto G60S",adaptacoes:["Moto G60","Redmi 10C","Moto G9+"]},
+{marca:"Motorola",modelo:"Moto G84 5G",adaptacoes:["Moto G54","Moto G14","Moto G84"]},
+{marca:"Motorola",modelo:"Moto G9+",adaptacoes:["Moto G60","Redmi 10C","Moto G60S","Moto G200"]},
+{marca:"Motorola",modelo:"Moto Edge 20 Lite",adaptacoes:["Moto Edge 20","Moto Edge 30X","Moto Edge 30 Pro"]},
+{marca:"Motorola",modelo:"Moto Edge 30 Pro",adaptacoes:["Moto Edge 20 Lite","Moto Edge 30X","Moto Edge 20"]},
+{marca:"Motorola",modelo:"Moto Edge 30X",adaptacoes:["Moto Edge 20 Lite","Moto Edge 30 Pro","Moto Edge 20"]},
+{marca:"Motorola",modelo:"Moto One Action",adaptacoes:["Moto One Avision"]},
+{marca:"Motorola",modelo:"Moto One Macro",adaptacoes:["Moto G8 Play","Moto G8 Plus"]},
 {marca:"Motorola",modelo:"Moto G8 Power Lite",adaptacoes:["Moto G8","Moto G9 Play","Moto G10","Moto G20","Moto G30","Moto E20","Galaxy A12"]},
 {marca:"Motorola",modelo:"Moto G9",adaptacoes:["Moto 9 Play","Redmi 9A","Redmi 9A Sport","Redmi 9i","Galaxy A23 5G","Galaxy A32 5G","Moto G20","Moto G30","Moto G50","Moto G10 Power","Moto One Fusion","Galaxy M12"]},
 {marca:"Motorola",modelo:"Moto G9 Plus",adaptacoes:["Sem Adaptação"]},
@@ -882,7 +990,40 @@ const dados = [
 {marca:"Xiaomi",modelo:"Redmi 6A•7A",adaptacoes:["Sem Adaptação"]},
 {marca:"Xiaomi",modelo:"Redmi A1•A2",adaptacoes:["Sem Adaptação"]},
 {marca:"Xiaomi",modelo:"Redmi A3",adaptacoes:["Redmi 10C","Redmi 12C"]},
-{marca:"Xiaomi",modelo:"Redmi 9A•9C",adaptacoes:["Redmi 9i","Redmi 10A","Galaxy A02","Galaxy A03","Galaxy A12","Galaxy M12","Moto E7","Moto E20","Moto G9"]},
+{marca:"Xiaomi",modelo:"Redmi 9",adaptacoes:["Redmi 9T"]},
+{marca:"Xiaomi",modelo:"Redmi 9A",adaptacoes:["Redmi 9C","Redmi 9i","Redmi 9A Sport","Redmi 10A","Galaxy A02","Galaxy A03","Galaxy A12","Galaxy M12","Moto E7","Moto E20","Moto G9","Poco M4"]},
+{marca:"Xiaomi",modelo:"Redmi 9C",adaptacoes:["Redmi 9A","Redmi 9i","Redmi 9A Sport","Redmi 10A","Galaxy A02","Galaxy A03","Galaxy A12","Galaxy M12","Moto E7","Moto E20","Moto G9","Poco M4"]},
+{marca:"Xiaomi",modelo:"Redmi 9i",adaptacoes:["Redmi 9A","Redmi 9C","Redmi 9A Sport","Redmi 10A","Galaxy A02","Galaxy A03","Galaxy A12","Galaxy M12","Moto E7","Moto E20","Moto G9","Poco M4"]},
+{marca:"Xiaomi",modelo:"Redmi 9A Sport",adaptacoes:["Redmi 9A","Redmi 9C","Redmi 9i","Redmi 10A","Galaxy A02","Galaxy A03","Galaxy A12","Galaxy M12","Moto E7","Moto E20","Moto G9","Poco M4"]},
+{marca:"Xiaomi",modelo:"Redmi 10A",adaptacoes:["Redmi 9A","Redmi 9C","Redmi 9i","Redmi 9A Sport","Galaxy A02","Galaxy A03","Galaxy A12","Galaxy M12","Moto E7","Moto E20","Moto G9","Poco M4"]},
+{marca:"Xiaomi",modelo:"Redmi 10 Prime",adaptacoes:["Moto G40","Moto G40 Fusion","Redmi Mi 11 Lite","Redmi 10A"]},
+{marca:"Xiaomi",modelo:"Redmi 11 Prime",adaptacoes:["Poco M4","Redmi 10A","Redmi A1","Redmi A1+"]},
+{marca:"Xiaomi",modelo:"Redmi 12",adaptacoes:["Redmi 13","Redmi Poco C65","Redmi Poco M6","Poco M6 Pro"]},
+{marca:"Xiaomi",modelo:"Redmi A1",adaptacoes:["Redmi A1+","Redmi A2","Redmi 11 Prime","Poco M4"]},
+{marca:"Xiaomi",modelo:"Redmi A1+",adaptacoes:["Redmi A1","Redmi A2","Redmi 11 Prime","Poco M4"]},
+{marca:"Xiaomi",modelo:"Redmi A2",adaptacoes:["Redmi A1","Redmi A1+","Redmi 11 Prime","Poco M4"]},
+{marca:"Xiaomi",modelo:"Redmi A5",adaptacoes:["Redmi 14C","Poco C75","Poco C71","Moto G06"]},
+{marca:"Xiaomi",modelo:"Redmi 8 Lite",adaptacoes:["Note 6 Pro","Redmi Mi 8 Lite"]},
+{marca:"Xiaomi",modelo:"Redmi Mi 11 Lite",adaptacoes:["Moto G40","Moto G40 Fusion","Redmi 10 Prime","Moto One Hyper"]},
+{marca:"Xiaomi",modelo:"Redmi Mi 11i",adaptacoes:["Poco X3","Poco X3 Pro","Poco X4","Poco X4 Pro","Poco X4 GT","Galaxy A71","Galaxy M51","Galaxy S10 Lite","Redmi Note 10 Pro","Redmi Note 11 Pro","LG K61"]},
+{marca:"Xiaomi",modelo:"Redmi Note 7",adaptacoes:["Redmi Note 8","Galaxy A10","Galaxy A20","Galaxy A30","Moto G7","Moto One Hyper"]},
+{marca:"Xiaomi",modelo:"Poco C65",adaptacoes:["Redmi 12","Redmi 13","Redmi Poco M6"]},
+{marca:"Xiaomi",modelo:"Poco C71",adaptacoes:["Redmi 14C","Poco C75","Redmi A5","Moto G06"]},
+{marca:"Xiaomi",modelo:"Poco C75",adaptacoes:["Redmi 14C","Poco C71","Redmi A5","Moto G06"]},
+{marca:"Xiaomi",modelo:"Poco C85",adaptacoes:["Redmi 15C"]},
+{marca:"Xiaomi",modelo:"Poco M5",adaptacoes:["Poco M4","Redmi 9A","Redmi 9i","Redmi 9C","Redmi 9A Sport","Redmi 10A","Redmi A1","Redmi A1+","Redmi A2","Redmi 11 Prime","Galaxy A02"]},
+{marca:"Xiaomi",modelo:"Poco X3 GT",adaptacoes:["Poco X3","Poco X3 Pro","Poco X4","Poco X4 Pro","Poco X4 GT","Galaxy A71","Galaxy M51","Galaxy S10 Lite","Redmi Note 10 Pro","Redmi Note 11 Pro","Redmi Mi 11i","LG K61"]},
+{marca:"Xiaomi",modelo:"Poco X4",adaptacoes:["Poco X3","Poco X3 Pro","Poco X3 GT","Poco X4 Pro","Poco X4 GT","Galaxy A71","Galaxy M51","Galaxy S10 Lite","Redmi Note 10 Pro","Redmi Note 11 Pro","Redmi Mi 11i","LG K61"]},
+{marca:"Xiaomi",modelo:"Poco X4 Pro",adaptacoes:["Poco X3","Poco X3 Pro","Poco X3 GT","Poco X4","Poco X4 GT","Galaxy A71","Galaxy M51","Galaxy S10 Lite","Redmi Note 10 Pro","Redmi Note 11 Pro","Redmi Mi 11i","LG K61"]},
+{marca:"Xiaomi",modelo:"Poco X4 GT",adaptacoes:["Poco X3","Poco X3 Pro","Poco X3 GT","Poco X4","Poco X4 Pro","Galaxy A71","Galaxy M51","Galaxy S10 Lite","Redmi Note 10 Pro","Redmi Note 11 Pro","Redmi Mi 11i","LG K61"]},
+{marca:"Xiaomi",modelo:"Poco X6 Pro",adaptacoes:["Poco X6","Poco X7 Pro","Redmi Note 10 Pro","Redmi Note 11 Pro"]},
+{marca:"Xiaomi",modelo:"Poco F4",adaptacoes:["Poco F3","Poco F5","Redmi Note 11 5G"]},
+{marca:"Xiaomi",modelo:"Poco F5",adaptacoes:["Poco F3","Poco F4","Poco F5 Pro","Redmi Note 11 5G"]},
+{marca:"Xiaomi",modelo:"Redmi Note 11 5G",adaptacoes:["Poco F3","Poco F4","Poco F5","Redmi Note 11 Pro"]},
+{marca:"Xiaomi",modelo:"Redmi Note 13 Pro",adaptacoes:["Redmi Note 13","Redmi Note 14","Redmi MI 13T","Redmi MI 13T Pro"]},
+{marca:"Xiaomi",modelo:"Redmi 13T",adaptacoes:["Redmi Note 13","Redmi Note 13 Pro","Redmi Note 14","Redmi 13T Pro","Xiaomi 14T"]},
+{marca:"Xiaomi",modelo:"Redmi 13T Pro",adaptacoes:["Redmi Note 13","Redmi Note 13 Pro","Redmi Note 14","Redmi 13T","Xiaomi 14T"]},
+{marca:"Xiaomi",modelo:"Redmi 14",adaptacoes:["Redmi Note 14","Redmi 13T","Redmi 13T Pro"]},
 {marca:"Xiaomi",modelo:"Redmi 9T",adaptacoes:["Redmi 9"]},
 {marca:"Xiaomi",modelo:"Redmi 10C",adaptacoes:["Redmi A3","Redmi 12C","Galaxy A05"]},
 {marca:"Xiaomi",modelo:"Redmi 12•13",adaptacoes:["Redmi Poco C65","Redmi Poco M6"]},
@@ -896,12 +1037,12 @@ const dados = [
 {marca:"Xiaomi",modelo:"Redmi Note 8T",adaptacoes:["Sem Adaptação"]},
 {marca:"Xiaomi",modelo:"Redmi Note 8 Pro",adaptacoes:["Galaxy A30","Galaxy A50","Moto G8 Power"]},
 {marca:"Xiaomi",modelo:"Redmi Note 9",adaptacoes:["Galaxy A11","Galaxy A21","Moto G22","Moto G31"]},
-{marca:"Xiaomi",modelo:"Redmi Note 9S",adaptacoes:["Galaxy A31","SGalaxy A32","Moto G40","Moto G41"]},
+{marca:"Xiaomi",modelo:"Redmi Note 9S",adaptacoes:["Galaxy A31","Galaxy A32","Moto G40","Moto G41"]},
 {marca:"Xiaomi",modelo:"Redmi Note 9 Pro",adaptacoes:["Galaxy A31","Galaxy A32","Moto G40","Moto G41"]},
 {marca:"Xiaomi",modelo:"Redmi Note 10",adaptacoes:["Redmi Note 11","Redmi Note 11S","Redmi Note 12","Galaxy A11","Galaxy A21","Moto G22"]},
 {marca:"Xiaomi",modelo:"Redmi Note 10 5G",adaptacoes:["Moto G13","Moto G53"]},
 {marca:"Xiaomi",modelo:"Redmi Note 10S",adaptacoes:["Galaxy A32","Galaxy A33","Moto G52"]},
-{marca:"Xiaomi",modelo:"Redmi Note 10 Pro",adaptacoes:["Redmi Note 11 Pro","SGalaxy A52","Galaxy A52S","Galaxy S20 FE","Moto G82"]},
+{marca:"Xiaomi",modelo:"Redmi Note 10 Pro",adaptacoes:["Redmi Note 11 Pro","Galaxy A52","Galaxy A52S","Galaxy S20 FE","Moto G82"]},
 {marca:"Xiaomi",modelo:"Redmi Note 11",adaptacoes:["Redmi Note 10","Redmi Note 11S","Redmi Note 12","Galaxy A21","Galaxy A71","Moto G22"]},
 {marca:"Xiaomi",modelo:"Redmi Note 11S",adaptacoes:["Redmi Note 10","Redmi Note 11","Redmi Note 12","Galaxy A32","Galaxy A33","Moto G52"]},
 {marca:"Xiaomi",modelo:"Redmi Note 11 Pro",adaptacoes:["Redmi Note 10 Pro","Galaxy A52","Galaxy A53","Moto G82"]},
@@ -954,8 +1095,11 @@ const dados = [
 /* ================= Realme ================= */
 {marca:"Realme",modelo:"7",adaptacoes:["Sem Adaptação"]},
 {marca:"Realme",modelo:"8",adaptacoes:["Sem Adaptação"]},
-{marca:"Realme",modelo:"C35",adaptacoes:["Moto G8 Power Lite","Samsung A12"]},
-{marca:"Realme",modelo:"Note 50",adaptacoes:["Galaxy A05","Redmi 13C"]},
+{marca:"Realme",modelo:"C2",adaptacoes:["Galaxy A23","Galaxy A22","Galaxy A02"]},
+{marca:"Realme",modelo:"C11",adaptacoes:["Moto E13","Moto E30","Moto G9 Play","Galaxy A02S","Moto G30","Moto E7 Power","Moto One Fusion","Galaxy A12","Galaxy A70"]},
+{marca:"Realme",modelo:"C33",adaptacoes:["Moto G8 Power Lite","Samsung A12","Poco C3","Galaxy A05","Redmi 13C","Realme Note 50","Realme Note 60"]},
+{marca:"Realme",modelo:"Note 50",adaptacoes:["Galaxy A05","Redmi 13C","Realme C33","Realme Note 60"]},
+{marca:"Realme",modelo:"Note 60",adaptacoes:["Galaxy A05","Redmi 13C","Realme C33","Realme Note 50"]},
 
 /* ================= Asus ================= */
 {marca:"Asus",modelo:"Zenfone Max Shot",adaptacoes:["Sem Adaptação"]},
@@ -978,17 +1122,22 @@ const dados = [
 
 /* ================= Lg ================= */
 {marca:"Lg",modelo:"K11",adaptacoes:["Sem Adaptação"]},
+{marca:"Lg",modelo:"K40S",adaptacoes:["Galaxy A10","Galaxy A10S","Galaxy M10","Moto G8 Play","Moto G8 Plus","Moto G7","Redmi 8","Redmi 8A"]},
+{marca:"Lg",modelo:"K61",adaptacoes:["Poco X3","Poco X3 Pro","Poco X4","Poco X4 Pro","Poco X4 GT","Galaxy A71","Galaxy M51","Galaxy S10 Lite","Redmi Note 10 Pro","Redmi Note 11 Pro","Redmi Mi 11i"]},
 
 /* ================= Oppo ================= */
-{marca:"Oppo",modelo:"A40",adaptacoes:["Morotola G05•G15"]},
+{marca:"Oppo",modelo:"A40",adaptacoes:["Moto G05•G15"]},
 
 /* ================= Jovi ================= */
-{marca:"Jovi",modelo:"V2445",adaptacoes:["Moro G05•G15"]},
-{marca:"Jovi",modelo:"Y29",adaptacoes:["Moro G56"]},
+{marca:"Jovi",modelo:"V2445",adaptacoes:["Moto G05•G15"]},
+{marca:"Jovi",modelo:"Y29",adaptacoes:["Moto G56"]},
 
+/* ================= Outros ================= */
+{marca:"Xiaomi",modelo:"Mi Play",adaptacoes:["Galaxy A01"]},
+{marca:"TCL",modelo:"40",adaptacoes:["Galaxy A05","Galaxy A05S","Redmi 13C","Redmi C65","Realme C33","Realme Note 50","Realme Note 60"]},
+{marca:"Motorola",modelo:"G06",adaptacoes:["Redmi 14C","Poco C75","Poco C71","Redmi A5"]},
 ];
 
-// ===== TEMA =====
 const themeToggle = document.getElementById('themeToggle');
 const savedTheme = localStorage.getItem('theme') || 'light';
 document.body.setAttribute('data-theme', savedTheme);
@@ -1000,16 +1149,18 @@ themeToggle.addEventListener('click', () => {
   localStorage.setItem('theme', newTheme);
 });
 
-// ===== SISTEMA DE ABAS =====
-function switchTab(tabName) {
+function switchTab(tabName, btn) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
   
   document.getElementById(tabName).classList.add('active');
-  event.target.classList.add('active');
+  if (btn) {
+    btn.classList.add('active');
+  } else {
+    event.currentTarget.classList.add('active');
+  }
 }
 
-// ===== ABA 1: PESQUISA =====
 const normalizar = (txt) => txt.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
 
 document.getElementById('busca').addEventListener('input', (e) => {
@@ -1070,7 +1221,6 @@ document.getElementById('busca').addEventListener('input', (e) => {
   `).join('');
 });
 
-// ===== ABA 2: GERADOR DE PLACAS =====
 const cores = {
   samsung: { fundo:"#1428a0", texto:"#ffffff" },
   motorola: { fundo:"#001526", texto:"#ffffff" },
@@ -1088,8 +1238,8 @@ const cores = {
   jovi: { fundo:"#1c4598", texto:"#ffffff" }
 };
 
-// Popula fabricantes
 const fabricantes = [...new Set(dados.map(d => d.marca))].sort();
+
 const fabSelect = document.getElementById('fabricante');
 fabricantes.forEach(f => {
   const opt = document.createElement('option');
@@ -1098,7 +1248,14 @@ fabricantes.forEach(f => {
   fabSelect.appendChild(opt);
 });
 
-// Popula modelos ao selecionar fabricante
+const fabSelectCapa = document.getElementById('fabricanteCapa');
+fabricantes.forEach(f => {
+  const opt = document.createElement('option');
+  opt.value = f;
+  opt.textContent = f;
+  fabSelectCapa.appendChild(opt);
+});
+
 fabSelect.addEventListener('change', () => {
   const modeloSelect = document.getElementById('modelo');
   modeloSelect.innerHTML = '<option value="">Modelo</option>';
@@ -1129,7 +1286,7 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-function gerarImagem() {
+function gerarImagemPelicula() {
   const fabricante = document.getElementById('fabricante').value;
   const modelo = document.getElementById('modelo').value;
   
@@ -1148,69 +1305,64 @@ function gerarImagem() {
   const ctx = canvas.getContext("2d");
   const est = cores[achado.marca.toLowerCase()] || { fundo:"#fff", texto:"#000" };
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, 591, 591);
   ctx.fillStyle = est.fundo;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillRect(0, 0, 591, 591);
 
-  // Bordas
-  const b = 25;
+  const b = 12;
   ctx.fillStyle = "#0051ff";
-  ctx.fillRect(0, 0, canvas.width, b);
-  ctx.fillRect(0, 0, b, canvas.height);
+  ctx.fillRect(0, 0, 591, b);
+  ctx.fillRect(0, 0, b, 591);
   ctx.fillStyle = "#ff7a00";
-  ctx.fillRect(0, canvas.height - b, canvas.width, b);
-  ctx.fillRect(canvas.width - b, 0, b, canvas.height);
+  ctx.fillRect(0, 591 - b, 591, b);
+  ctx.fillRect(591 - b, 0, b, 591);
 
   ctx.textAlign = "center";
   ctx.fillStyle = est.texto;
   ctx.textBaseline = "alphabetic";
 
-  let y = b + 40;
+  let y = b + 20;
 
-  // Caixa Logo
-  const boxW = 420, boxH = 130;
-  const boxX = (canvas.width - boxW) / 2;
+  const boxW = 210, boxH = 65;
+  const boxX = (591 - boxW) / 2;
   const boxY = y;
 
   ctx.shadowColor = "rgba(0,0,0,0.35)";
-  ctx.shadowBlur = 18;
-  ctx.shadowOffsetY = 8;
+  ctx.shadowBlur = 9;
+  ctx.shadowOffsetY = 4;
   ctx.fillStyle = "#fff";
-  roundRect(ctx, boxX, boxY, boxW, boxH, 28);
+  roundRect(ctx, boxX, boxY, boxW, boxH, 14);
   ctx.fill();
   ctx.shadowColor = "transparent";
 
   const logo = new Image();
   logo.src = `logo2/${achado.marca.toLowerCase()}.png`;
   logo.onload = () => {
-    const imgW = boxW - 80;
+    const imgW = boxW - 40;
     const imgH = logo.height * (imgW / logo.width);
     ctx.drawImage(logo, boxX + (boxW - imgW) / 2, boxY + (boxH - imgH) / 2, imgW, imgH);
   };
 
-  y = boxY + boxH + 100;
+  y = boxY + boxH + 50;
 
-  // Modelo
-  let tamanho = 130;
+  let tamanho = 65;
   do {
     ctx.font = `bold ${tamanho}px Arial`;
     tamanho--;
-  } while (ctx.measureText(achado.modelo).width > canvas.width - 120);
+  } while (ctx.measureText(achado.modelo).width > 591 - 60);
 
   ctx.fillStyle = est.texto;
-  ctx.fillText(achado.modelo, canvas.width / 2, y);
+  ctx.fillText(achado.modelo, 591 / 2, y);
 
-  y += 120;
+  y += 60;
 
-  // Título
-  ctx.font = "bold 60px Arial";
-  ctx.fillText("Adaptações:", canvas.width / 2, y);
+  ctx.font = "bold 30px Arial";
+  ctx.fillText("Adaptações:", 591 / 2, y);
 
-  y += 50;
+  y += 25;
 
-  // Adaptações - Sistema inteligente
-  const areaAltura = canvas.height - y - b - 20;
-  const areaLargura = canvas.width - 100;
+  const areaAltura = 591 - y - b - 10;
+  const areaLargura = 591 - 50;
   const numAdaptacoes = achado.adaptacoes.length;
   
   let colunas;
@@ -1220,36 +1372,36 @@ function gerarImagem() {
   else colunas = 4;
   
   const linhasPorCol = Math.ceil(numAdaptacoes / colunas);
-  const gap = 35;
+  const gap = 17;
   const larguraCol = (areaLargura - (gap * (colunas - 1))) / colunas;
   
-  let fonte = 70;
+  let fonte = 35;
   let espacamento = fonte * 0.45;
   
-  while ((linhasPorCol * (fonte + espacamento)) > areaAltura && fonte > 30) {
-    fonte -= 2;
+  while ((linhasPorCol * (fonte + espacamento)) > areaAltura && fonte > 15) {
+    fonte -= 1;
     espacamento = fonte * 0.45;
   }
   
   ctx.font = `bold ${fonte}px Arial`;
   let textoMuitoLongo = true;
   
-  while (textoMuitoLongo && fonte > 30) {
+  while (textoMuitoLongo && fonte > 15) {
     textoMuitoLongo = false;
     ctx.font = `bold ${fonte}px Arial`;
     
     achado.adaptacoes.forEach(t => {
-      if (ctx.measureText(t).width > larguraCol - 15) textoMuitoLongo = true;
+      if (ctx.measureText(t).width > larguraCol - 8) textoMuitoLongo = true;
     });
     
     if (textoMuitoLongo) {
-      fonte -= 2;
+      fonte -= 1;
       espacamento = fonte * 0.45;
     }
   }
   
   ctx.font = `bold ${fonte}px Arial`;
-  const inicioX = (canvas.width - ((larguraCol * colunas) + (gap * (colunas - 1)))) / 2;
+  const inicioX = (591 - ((larguraCol * colunas) + (gap * (colunas - 1)))) / 2;
   const alturaTotal = linhasPorCol * (fonte + espacamento) - espacamento;
   const yInicio = y + (areaAltura - alturaTotal) / 2;
   
@@ -1262,7 +1414,7 @@ function gerarImagem() {
   });
 }
 
-function baixarImagem() {
+function baixarImagemPelicula() {
   const fabricante = document.getElementById('fabricante').value;
   const modelo = document.getElementById('modelo').value;
   
@@ -1273,12 +1425,153 @@ function baixarImagem() {
 
   const canvas = document.getElementById('canvas');
   const a = document.createElement("a");
-  a.download = `${fabricante} ${modelo}.png`;
+  a.download = `Placa_Pelicula_${fabricante}_${modelo}.png`;
   a.href = canvas.toDataURL("image/png");
   a.click();
 }
 
-// Inicializa
+function gerarImagemCapa() {
+  const fabricante = document.getElementById('fabricanteCapa').value;
+  const linha1 = document.getElementById('linha1Capa').value.trim();
+  const linha2 = document.getElementById('linha2Capa').value.trim();
+  const linha3 = document.getElementById('linha3Capa').value.trim();
+  
+  if (!fabricante || (!linha1 && !linha2 && !linha3)) {
+    alert("Selecione a fabricante e preencha pelo menos uma linha do modelo!");
+    return;
+  }
+
+  const canvas = document.getElementById('canvasCapa');
+  const ctx = canvas.getContext("2d");
+  const est = cores[fabricante.toLowerCase()] || { fundo:"#0047AB", texto:"#000000" };
+
+  // 1. Fundo totalmente branco
+  ctx.clearRect(0, 0, 591, 591);
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, 591, 591);
+
+  // 2. Borda com a cor da fabricante selecionada
+  const b = 15;
+  ctx.fillStyle = est.fundo;
+  ctx.fillRect(0, 0, 591, b);
+  ctx.fillRect(0, 0, b, 591);
+  ctx.fillRect(0, 591 - b, 591, b);
+  ctx.fillRect(591 - b, 0, b, 591);
+
+  // 3. Círculo preto de 5x5 mm (marca de corte/furo)
+  const mmToPx = 591 / 50;
+  const raioCirculo = 2.5 * mmToPx; 
+  const centroX = 25 * mmToPx;      
+  const centroY = 10 * mmToPx;      
+
+  ctx.beginPath();
+  ctx.arc(centroX, centroY, raioCirculo, 0, 2 * Math.PI);
+  ctx.fillStyle = "#000000";
+  ctx.fill();
+
+  ctx.textAlign = "center";
+  ctx.textBaseline = "alphabetic";
+
+  // 4. Box para a logo da fabricante (posicionado abaixo do círculo)
+  const boxW = 280;
+  const boxH = 100;
+  const boxX = (591 - boxW) / 2;
+  const boxY = 180; 
+
+  ctx.shadowColor = "rgba(0,0,0,0.12)";
+  ctx.shadowBlur = 12;
+  ctx.shadowOffsetY = 6;
+  ctx.fillStyle = "#ffffff";
+  roundRect(ctx, boxX, boxY, boxW, boxH, 18);
+  ctx.fill();
+  ctx.shadowColor = "transparent";
+
+  // 5. Carregar e desenhar a logo
+  const logo = new Image();
+  logo.src = `logo2/${fabricante.toLowerCase()}.png`;
+  
+  const linhasTexto = [linha1, linha2, linha3].filter(l => l !== "");
+  
+  logo.onload = () => {
+    const maxImgW = boxW - 40;
+    const imgRatio = logo.width / logo.height;
+    let imgW = maxImgW;
+    let imgH = imgW / imgRatio;
+    
+    if (imgH > boxH - 20) {
+      imgH = boxH - 20;
+      imgW = imgH * imgRatio;
+    }
+    
+    ctx.drawImage(logo, boxX + (boxW - imgW) / 2, boxY + (boxH - imgH) / 2, imgW, imgH);
+    desenharTextoModeloCapa(ctx, linhasTexto, b, boxY + boxH);
+  };
+  
+  // Fallback caso a imagem não carregue
+  logo.onerror = () => {
+    ctx.fillStyle = est.fundo;
+    ctx.font = "bold 42px Arial";
+    ctx.fillText(fabricante.toUpperCase(), 591 / 2, boxY + boxH / 2 + 15);
+    desenharTextoModeloCapa(ctx, linhasTexto, b, boxY + boxH);
+  };
+}
+
+function desenharTextoModeloCapa(ctx, linhasTexto, b, startY) {
+  let y = startY + 40;
+  ctx.fillStyle = "#000000"; 
+  ctx.textAlign = "center";
+  
+  const maxWidth = 591 - 80; // Margem de 40px de cada lado
+  let tamanhoFonte = 60;
+  
+  // Filtrar linhas vazias
+  const linhas = linhasTexto.filter(l => l.length > 0);
+  
+  // Ajustar fonte para caber na largura máxima
+  while (tamanhoFonte >= 30) {
+    let cabe = true;
+    ctx.font = `bold ${tamanhoFonte}px Arial`;
+    for (let i = 0; i < linhas.length; i++) {
+      if (ctx.measureText(linhas[i]).width > maxWidth) {
+        cabe = false;
+        break;
+      }
+    }
+    if (cabe) break;
+    tamanhoFonte -= 2;
+  }
+  
+  const alturaLinha = tamanhoFonte * 1.3;
+  const alturaTotalTexto = linhas.length * alturaLinha;
+  const espacoRestante = 591 - b - y;
+  
+  // Centralizar o bloco de texto no espaço restante abaixo da logo
+  const yInicio = y + (espacoRestante - alturaTotalTexto) / 2 + alturaLinha;
+  
+  linhas.forEach((linha, i) => {
+    ctx.fillText(linha, 591 / 2, yInicio + i * alturaLinha);
+  });
+}
+
+function baixarImagemCapa() {
+  const fabricante = document.getElementById('fabricanteCapa').value;
+  const linha1 = document.getElementById('linha1Capa').value.trim();
+  const linha2 = document.getElementById('linha2Capa').value.trim();
+  const linha3 = document.getElementById('linha3Capa').value.trim();
+  
+  if (!fabricante || (!linha1 && !linha2 && !linha3)) {
+    alert("Gere a imagem primeiro!");
+    return;
+  }
+
+  const canvas = document.getElementById('canvasCapa');
+  const nomeBase = linha1 || "Modelo";
+  const a = document.createElement("a");
+  a.download = `Placa_Capa_${fabricante}_${nomeBase}.png`.replace(/[^a-zA-Z0-9_\-]/g, '_');
+  a.href = canvas.toDataURL("image/png");
+  a.click();
+}
+
 document.getElementById('resultado').innerHTML = `
   <div class="vazio">
     <i class="fas fa-mobile-alt"></i>
