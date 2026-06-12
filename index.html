@@ -1325,17 +1325,11 @@ function gerarImagemPelicula() {
 
   let y = b + 20;
 
-  const boxW = 210, boxH = 65;
+  const boxW = 300, boxH = 110;
   const boxX = (591 - boxW) / 2;
   const boxY = y;
 
-  ctx.shadowColor = "rgba(0,0,0,0.35)";
-  ctx.shadowBlur = 9;
-  ctx.shadowOffsetY = 4;
-  ctx.fillStyle = "#fff";
-  roundRect(ctx, boxX, boxY, boxW, boxH, 14);
-  ctx.fill();
-  ctx.shadowColor = "transparent";
+
 
   const logo = new Image();
   logo.src = `logo2/${achado.marca.toLowerCase()}.png`;
@@ -1475,18 +1469,12 @@ function gerarImagemCapa() {
   ctx.textBaseline = "alphabetic";
 
   // 4. Box para a logo da fabricante (posicionado abaixo do círculo)
-  const boxW = 280;
-  const boxH = 100;
+  const boxW = 320;
+  const boxH = 120;
   const boxX = (591 - boxW) / 2;
   const boxY = 180; 
 
-  ctx.shadowColor = "rgba(0,0,0,0.12)";
-  ctx.shadowBlur = 12;
-  ctx.shadowOffsetY = 6;
-  ctx.fillStyle = "#ffffff";
-  roundRect(ctx, boxX, boxY, boxW, boxH, 18);
-  ctx.fill();
-  ctx.shadowColor = "transparent";
+
 
   // 5. Carregar e desenhar a logo
   const logo = new Image();
