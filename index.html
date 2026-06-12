@@ -1329,7 +1329,13 @@ function gerarImagemPelicula() {
   const boxX = (591 - boxW) / 2;
   const boxY = y;
 
-
+  ctx.shadowColor = "rgba(0,0,0,0.35)";
+  ctx.shadowBlur = 9;
+  ctx.shadowOffsetY = 4;
+  ctx.fillStyle = "#fff";
+  roundRect(ctx, boxX, boxY, boxW, boxH, 14);
+  ctx.fill();
+  ctx.shadowColor = "transparent";
 
   const logo = new Image();
   logo.src = `logo2/${achado.marca.toLowerCase()}.png`;
@@ -1410,6 +1416,73 @@ function gerarImagemPelicula() {
   });
 }
 
+function crc32(data) {
+  let crc = 0xFFFFFFFF;
+  const table = new Uint32Array(256);
+  for (let i = 0; i < 256; i++) {
+    let c = i;
+    for (let j = 0; j < 8; j++) {
+      c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    }
+    table[i] = c;
+  }
+  for (let i = 0; i < data.length; i++) {
+    crc = table[(crc ^ data[i]) & 0xFF] ^ (crc >>> 8);
+  }
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+
+function addDpiToPng(base64Data, dpi) {
+  const base64 = base64Data.split(',')[1];
+  const binaryString = atob(base64);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+
+  const ppm = Math.round(dpi / 0.0254);
+  const ppmBytes = new Uint8Array([
+    (ppm >> 24) & 0xFF,
+    (ppm >> 16) & 0xFF,
+    (ppm >> 8) & 0xFF,
+    ppm & 0xFF
+  ]);
+
+  const physData = new Uint8Array(9);
+  physData.set(ppmBytes, 0);
+  physData.set(ppmBytes, 4);
+  physData[8] = 1;
+
+  const crcData = new Uint8Array(4 + 9);
+  crcData[0] = 0x70; crcData[1] = 0x48; crcData[2] = 0x59; crcData[3] = 0x73;
+  crcData.set(physData, 4);
+  const crc = crc32(crcData);
+
+  const crcBytes = new Uint8Array([
+    (crc >> 24) & 0xFF,
+    (crc >> 16) & 0xFF,
+    (crc >> 8) & 0xFF,
+    crc & 0xFF
+  ]);
+
+  const physChunk = new Uint8Array(4 + 4 + 9 + 4);
+  physChunk[0] = 0; physChunk[1] = 0; physChunk[2] = 0; physChunk[3] = 9;
+  physChunk[4] = 0x70; physChunk[5] = 0x48; physChunk[6] = 0x59; physChunk[7] = 0x73;
+  physChunk.set(physData, 8);
+  physChunk.set(crcBytes, 17);
+
+  const newBytes = new Uint8Array(bytes.length + physChunk.length);
+  newBytes.set(bytes.subarray(0, 33), 0);
+  newBytes.set(physChunk, 33);
+  newBytes.set(bytes.subarray(33), 33 + physChunk.length);
+
+  let binary = '';
+  for (let i = 0; i < newBytes.length; i++) {
+    binary += String.fromCharCode(newBytes[i]);
+  }
+  return 'data:image/png;base64,' + btoa(binary);
+}
+
 function baixarImagemPelicula() {
   const fabricante = document.getElementById('fabricante').value;
   const modelo = document.getElementById('modelo').value;
@@ -1422,7 +1495,7 @@ function baixarImagemPelicula() {
   const canvas = document.getElementById('canvas');
   const a = document.createElement("a");
   a.download = `${fabricante} ${modelo}.png`;
-  a.href = canvas.toDataURL("image/png");
+  a.href = addDpiToPng(canvas.toDataURL("image/png"), 300);
   a.click();
 }
 
@@ -1558,7 +1631,7 @@ function baixarImagemCapa() {
   const partesModelo = [linha1, linha2, linha3].filter(p => p !== "").join(" ");
   const a = document.createElement("a");
   a.download = `${fabricante} ${partesModelo}.png`;
-  a.href = canvas.toDataURL("image/png");
+  a.href = addDpiToPng(canvas.toDataURL("image/png"), 300);
   a.click();
 }
 
