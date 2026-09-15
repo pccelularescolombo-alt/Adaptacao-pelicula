@@ -19,7 +19,7 @@
   <i class="fas fa-moon"></i>
 </button>
 
-<button class="painel-toggle" id="painelToggle" aria-label="Abrir ranking de avaliações">
+<button class="painel-toggle" id="painelToggle" aria-label="Abrir painel administrativo">
   <i class="fas fa-ranking-star"></i>
 </button>
 
@@ -144,69 +144,82 @@
   </div>
 </div>
 
-<div class="painel-overlay" id="painelOverlay">
-  <div class="painel-modal">
-    <div class="painel-header">
-      <h2><i class="fas fa-ranking-star"></i> Ranking de avaliações das lojas</h2>
-      <button type="button" class="painel-fechar" id="painelFechar" aria-label="Fechar painel">
-        <i class="fas fa-xmark"></i>
-      </button>
-    </div>
-
-    <div class="painel-admin-area">
-      <button type="button" class="btn-admin" id="painelAdminBtn">
-        <i class="fas fa-user-lock"></i>
-        Adicionar / editar modelo
-      </button>
-      <button type="button" class="btn-sair" id="painelSairBtn" style="display:none;">
-        <i class="fas fa-right-from-bracket"></i>
-        Sair
-      </button>
-    </div>
-
-    <div class="painel-ordenar">
-      <span>Ordenar por:</span>
-      <button type="button" class="ativo" data-ordem="deslikes"><i class="fas fa-thumbs-down"></i> Mais deslikes</button>
-      <button type="button" data-ordem="likes"><i class="fas fa-thumbs-up"></i> Mais likes</button>
-    </div>
-
-    <p class="painel-legenda">
-      Adaptações marcadas como <strong>"Removida do site"</strong> já somem
-      automaticamente da busca (por terem passado do limite de reprovação).
-      As demais continuam visíveis — use esta lista pra decidir manualmente
-      se alguma outra deve ser removida do catálogo.
-    </p>
-
-    <div id="painelCorpo" class="painel-corpo"></div>
+<!-- Página administrativa em tela cheia: pede usuário/senha e, depois de
+     logado, mostra 2 abas (modelos cadastrados e ranking de avaliações). -->
+<div class="admin-pagina" id="painelPagina">
+  <div class="admin-pagina-topo">
+    <button type="button" class="admin-pagina-voltar" id="painelVoltarBtn" aria-label="Voltar para o site">
+      <i class="fas fa-arrow-left"></i>
+    </button>
+    <h2><i class="fas fa-user-shield"></i> Painel administrativo</h2>
+    <button type="button" class="btn-sair" id="painelSairBtn" style="display:none;">
+      <i class="fas fa-right-from-bracket"></i>
+      Sair
+    </button>
   </div>
-</div>
 
-<!-- Login do admin (usuário e senha), pra liberar o cadastro de modelo -->
-<div class="painel-overlay" id="loginOverlay">
-  <div class="painel-modal login-modal">
-    <div class="painel-header">
-      <h2><i class="fas fa-lock"></i> Acesso restrito</h2>
-      <button type="button" class="painel-fechar" id="loginFechar" aria-label="Fechar">
-        <i class="fas fa-xmark"></i>
+  <!-- Tela de login: aparece dentro da própria página até autenticar -->
+  <div class="admin-pagina-login" id="painelLoginArea">
+    <div class="admin-pagina-login-box">
+      <i class="fas fa-lock"></i>
+      <h3>Acesso restrito</h3>
+      <p>Digite o usuário e a senha para ver o painel administrativo.</p>
+
+      <div class="admin-form-group">
+        <label class="admin-label" for="loginUsuario">Usuário</label>
+        <input type="text" id="loginUsuario" class="admin-input" autocomplete="off">
+      </div>
+      <div class="admin-form-group">
+        <label class="admin-label" for="loginSenha">Senha</label>
+        <input type="password" id="loginSenha" class="admin-input" autocomplete="off">
+      </div>
+
+      <p class="admin-erro" id="loginErro" style="display:none;">Usuário ou senha incorretos.</p>
+
+      <button type="button" class="btn-salvar admin-pagina-login-btn" id="loginEntrar">
+        <i class="fas fa-right-to-bracket"></i> Entrar
+      </button>
+    </div>
+  </div>
+
+  <!-- Conteúdo com as 2 abas, só aparece depois do login -->
+  <div class="admin-pagina-corpo" id="painelCorpoPagina" style="display:none;">
+    <div class="admin-pagina-tabs">
+      <button type="button" class="admin-pagina-tab active" id="tabModelosBtn">
+        <i class="fas fa-mobile-screen-button"></i> Modelos cadastrados
+      </button>
+      <button type="button" class="admin-pagina-tab" id="tabRankingBtn">
+        <i class="fas fa-ranking-star"></i> Ranking de avaliações
       </button>
     </div>
 
-    <p class="painel-legenda">Digite o usuário e a senha para adicionar ou editar um modelo no sistema.</p>
+    <div id="abaModelos" class="admin-pagina-aba active">
+      <div class="admin-pagina-aba-topo">
+        <input type="text" id="buscaModelosAdmin" class="admin-input admin-pagina-busca" placeholder="Buscar modelo cadastrado..." autocomplete="off">
+        <button type="button" class="btn-admin admin-pagina-add-btn" id="painelAdminBtn">
+          <i class="fas fa-plus"></i>
+          Adicionar modelo
+        </button>
+      </div>
 
-    <div class="admin-form-group">
-      <label class="admin-label" for="loginUsuario">Usuário</label>
-      <input type="text" id="loginUsuario" class="admin-input" autocomplete="off">
+      <div id="listaModelosAdmin" class="lista-modelos-admin"></div>
     </div>
-    <div class="admin-form-group">
-      <label class="admin-label" for="loginSenha">Senha</label>
-      <input type="password" id="loginSenha" class="admin-input" autocomplete="off">
-    </div>
 
-    <p class="admin-erro" id="loginErro" style="display:none;">Usuário ou senha incorretos.</p>
+    <div id="abaRanking" class="admin-pagina-aba">
+      <div class="painel-ordenar">
+        <span>Ordenar por:</span>
+        <button type="button" class="ativo" data-ordem="deslikes"><i class="fas fa-thumbs-down"></i> Mais deslikes</button>
+        <button type="button" data-ordem="likes"><i class="fas fa-thumbs-up"></i> Mais likes</button>
+      </div>
 
-    <div class="admin-acoes">
-      <button type="button" class="btn-cancelar" id="loginCancelar">Cancelar</button>
-      <button type="button" class="btn-salvar" id="loginEntrar"><i class="fas fa-right-to-bracket"></i> Entrar</button>
+      <p class="painel-legenda">
+        Adaptações marcadas como <strong>"Removida do site"</strong> já somem
+        automaticamente da busca (por terem passado do limite de reprovação).
+        As demais continuam visíveis — use esta lista pra decidir manualmente
+        se alguma outra deve ser removida do catálogo.
+      </p>
+
+      <div id="painelCorpo" class="painel-corpo"></div>
     </div>
   </div>
 </div>

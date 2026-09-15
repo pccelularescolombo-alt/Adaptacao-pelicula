@@ -207,7 +207,261 @@ body::before {
   display: none;
 }
 
-/* ===== Painel de ranking (modal) ===== */
+/* ===== Painel administrativo (página em tela cheia) ===== */
+.admin-pagina {
+  display: none;
+  flex-direction: column;
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  background: var(--bg-primary);
+  overflow-y: auto;
+}
+
+.admin-pagina.aberto {
+  display: flex;
+}
+
+.admin-pagina-topo {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #0d3bff 0%, #6b8cff 100%);
+  box-shadow: 0 4px 20px rgba(13, 59, 255, 0.3);
+}
+
+.admin-pagina-voltar {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.admin-pagina-voltar:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateX(-2px);
+}
+
+.admin-pagina-topo h2 {
+  flex: 1;
+  font-size: 17px;
+  font-weight: 800;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-pagina-topo .btn-sair {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+}
+
+.admin-pagina-topo .btn-sair:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+/* Tela de login embutida na página */
+.admin-pagina-login {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+}
+
+.admin-pagina-login-box {
+  width: 100%;
+  max-width: 380px;
+  background: var(--card-bg-solid, #ffffff);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 32px 28px;
+  text-align: center;
+  box-shadow: 0 20px 60px var(--glass-shadow);
+  color: var(--text-primary);
+}
+
+.admin-pagina-login-box > i {
+  font-size: 30px;
+  color: var(--azul);
+  margin-bottom: 12px;
+  display: inline-block;
+}
+
+.admin-pagina-login-box h3 {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.admin-pagina-login-box p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.admin-pagina-login-box .admin-form-group {
+  text-align: left;
+}
+
+.admin-pagina-login-btn {
+  width: 100%;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+/* Corpo com abas */
+.admin-pagina-corpo {
+  flex: 1;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.admin-pagina-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.admin-pagina-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.admin-pagina-tab:hover {
+  color: var(--text-primary);
+}
+
+.admin-pagina-tab.active {
+  color: var(--azul);
+  border-bottom-color: var(--azul);
+}
+
+[data-theme="dark"] .admin-pagina-tab.active {
+  color: #6b8cff;
+  border-bottom-color: #6b8cff;
+}
+
+.admin-pagina-aba {
+  display: none;
+}
+
+.admin-pagina-aba.active {
+  display: block;
+}
+
+.admin-pagina-aba-topo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-pagina-busca {
+  flex: 1;
+  min-width: 200px;
+}
+
+.admin-pagina-add-btn {
+  flex-shrink: 0;
+}
+
+/* Lista de modelos cadastrados (aba 1) */
+.lista-modelos-admin {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.item-modelo-admin {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--card-bg-solid, #ffffff);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.item-modelo-admin:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px var(--glass-shadow);
+  border-color: var(--azul);
+}
+
+.item-modelo-admin-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.item-modelo-admin-modelo {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.item-modelo-admin-marca {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.item-modelo-admin > i {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .admin-pagina-topo h2 {
+    font-size: 15px;
+  }
+  .admin-pagina-corpo {
+    padding: 16px 12px;
+  }
+  .admin-pagina-aba-topo {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* ===== Painel de ranking (modal legado — usado agora só pelo formulário
+   de login/admin dentro da página, via .admin-modal) ===== */
 .painel-overlay {
   display: none;
   position: fixed;

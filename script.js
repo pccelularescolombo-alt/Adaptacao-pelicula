@@ -318,10 +318,16 @@ buscaInput.addEventListener('input', (e) => {
    sozinhas ao passar do limite configurado em MIN_VOTOS_REMOCAO
    e LIMITE_REPROVACAO, lá em cima).
    ============================================================ */
-const painelOverlay = document.getElementById('painelOverlay');
+const painelPagina = document.getElementById('painelPagina');
 const painelBtn = document.getElementById('painelToggle');
-const painelFechar = document.getElementById('painelFechar');
+const painelVoltarBtn = document.getElementById('painelVoltarBtn');
+const painelLoginArea = document.getElementById('painelLoginArea');
+const painelCorpoPagina = document.getElementById('painelCorpoPagina');
 const painelCorpo = document.getElementById('painelCorpo');
+const tabModelosBtn = document.getElementById('tabModelosBtn');
+const tabRankingBtn = document.getElementById('tabRankingBtn');
+const abaModelos = document.getElementById('abaModelos');
+const abaRanking = document.getElementById('abaRanking');
 let ordemPainelAtual = 'deslikes'; // 'deslikes' | 'likes'
 
 function construirListaPainel() {
@@ -391,26 +397,68 @@ function renderPainel() {
 }
 
 function atualizarPainelSeAberto() {
-  if (painelOverlay && painelOverlay.classList.contains('aberto')) renderPainel();
+  if (painelPagina && painelPagina.classList.contains('aberto') && abaRanking.classList.contains('active')) {
+    renderPainel();
+  }
 }
 
-function abrirPainel() {
-  painelOverlay.classList.add('aberto');
+/* ---------- Página em tela cheia: abrir/fechar e login embutido ---------- */
+
+function abrirPainelPagina() {
+  painelPagina.classList.add('aberto');
+  document.body.style.overflow = 'hidden';
+  if (estaLogado()) {
+    mostrarConteudoPainel();
+  } else {
+    mostrarLoginPainel();
+  }
+}
+
+function fecharPainelPagina() {
+  painelPagina.classList.remove('aberto');
+  document.body.style.overflow = '';
+}
+
+function mostrarLoginPainel() {
+  painelLoginArea.style.display = 'flex';
+  painelCorpoPagina.style.display = 'none';
+  painelSairBtn.style.display = 'none';
+  loginErro.style.display = 'none';
+  loginUsuarioInput.value = '';
+  loginSenhaInput.value = '';
+  setTimeout(() => loginUsuarioInput.focus(), 50);
+}
+
+function mostrarConteudoPainel() {
+  painelLoginArea.style.display = 'none';
+  painelCorpoPagina.style.display = 'block';
+  painelSairBtn.style.display = 'inline-flex';
+  switchAbaPainel('modelos');
+  renderListaModelosAdmin();
   renderPainel();
   if (!avaliacoesCarregadas) carregarAvaliacoes();
 }
 
-function fecharPainel() {
-  painelOverlay.classList.remove('aberto');
+if (painelBtn) painelBtn.addEventListener('click', abrirPainelPagina);
+if (painelVoltarBtn) painelVoltarBtn.addEventListener('click', fecharPainelPagina);
+
+/* ---------- Abas: "Modelos cadastrados" e "Ranking de avaliações" ---------- */
+
+function switchAbaPainel(aba) {
+  const ehModelos = aba === 'modelos';
+  abaModelos.classList.toggle('active', ehModelos);
+  abaRanking.classList.toggle('active', !ehModelos);
+  tabModelosBtn.classList.toggle('active', ehModelos);
+  tabRankingBtn.classList.toggle('active', !ehModelos);
+  if (!ehModelos) {
+    renderPainel();
+    if (!avaliacoesCarregadas) carregarAvaliacoes();
+  }
 }
 
-if (painelBtn) painelBtn.addEventListener('click', abrirPainel);
-if (painelFechar) painelFechar.addEventListener('click', fecharPainel);
-if (painelOverlay) {
-  painelOverlay.addEventListener('click', (e) => {
-    if (e.target === painelOverlay) fecharPainel(); // clicou fora do card
-  });
-}
+if (tabModelosBtn) tabModelosBtn.addEventListener('click', () => switchAbaPainel('modelos'));
+if (tabRankingBtn) tabRankingBtn.addEventListener('click', () => switchAbaPainel('ranking'));
+
 document.querySelectorAll('.painel-ordenar button').forEach(btn => {
   btn.addEventListener('click', () => {
     ordemPainelAtual = btn.dataset.ordem;
@@ -563,8 +611,13 @@ async function carregarCatalogo() {
   }
 }
 
-/* ---------- Login (usuário e senha) ---------- */
-const loginOverlay = document.getElementById('loginOverlay');
+/* ---------- Login (usuário e senha) ----------
+   Agora o login protege a página inteira (ver abrirPainelPagina /
+   mostrarLoginPainel / mostrarConteudoPainel, mais acima): a pessoa só
+   enxerga as abas "Modelos cadastrados" e "Ranking de avaliações" depois
+   de autenticar. O botão "Adicionar modelo" (dentro da aba 1) não precisa
+   mais checar login separadamente, porque só existe depois de ele já ter
+   acontecido. */
 const loginUsuarioInput = document.getElementById('loginUsuario');
 const loginSenhaInput = document.getElementById('loginSenha');
 const loginErro = document.getElementById('loginErro');
@@ -572,55 +625,26 @@ const painelAdminBtn = document.getElementById('painelAdminBtn');
 const painelSairBtn = document.getElementById('painelSairBtn');
 
 // Fica logado até a pessoa clicar em "Sair" (ou limpar os dados do
-// navegador) — não pede usuário/senha de novo a cada cadastro.
+// navegador) — não pede usuário/senha de novo a cada visita ao painel.
 const CHAVE_ADMIN_LOGADO = 'pinheirinhoAdminLogado';
 function estaLogado() {
   return localStorage.getItem(CHAVE_ADMIN_LOGADO) === '1';
 }
-function atualizarBotoesLogin() {
-  const logado = estaLogado();
-  if (painelSairBtn) painelSairBtn.style.display = logado ? 'inline-flex' : 'none';
-  if (painelAdminBtn) {
-    painelAdminBtn.innerHTML = logado
-      ? '<i class="fas fa-mobile-screen-button"></i> Adicionar / editar modelo'
-      : '<i class="fas fa-user-lock"></i> Adicionar / editar modelo';
-  }
-}
-
-function abrirLogin() {
-  loginErro.style.display = 'none';
-  loginUsuarioInput.value = '';
-  loginSenhaInput.value = '';
-  loginOverlay.classList.add('aberto');
-  setTimeout(() => loginUsuarioInput.focus(), 50);
-}
-function fecharLogin() {
-  loginOverlay.classList.remove('aberto');
-}
 
 if (painelAdminBtn) {
-  painelAdminBtn.addEventListener('click', () => {
-    // Se já estiver logado (sessão salva), pula direto pro formulário.
-    if (estaLogado()) abrirAdmin();
-    else abrirLogin();
-  });
+  painelAdminBtn.addEventListener('click', () => abrirAdmin());
 }
 if (painelSairBtn) {
   painelSairBtn.addEventListener('click', () => {
     localStorage.removeItem(CHAVE_ADMIN_LOGADO);
-    atualizarBotoesLogin();
+    mostrarLoginPainel();
   });
 }
-document.getElementById('loginFechar').addEventListener('click', fecharLogin);
-document.getElementById('loginCancelar').addEventListener('click', fecharLogin);
-loginOverlay.addEventListener('click', (e) => { if (e.target === loginOverlay) fecharLogin(); });
 
 function tentarLogin() {
   if (loginUsuarioInput.value.trim() === ADMIN_USUARIO && loginSenhaInput.value === ADMIN_SENHA) {
     localStorage.setItem(CHAVE_ADMIN_LOGADO, '1');
-    atualizarBotoesLogin();
-    fecharLogin();
-    abrirAdmin();
+    mostrarConteudoPainel();
   } else {
     loginErro.style.display = 'block';
   }
@@ -629,7 +653,48 @@ document.getElementById('loginEntrar').addEventListener('click', tentarLogin);
 [loginUsuarioInput, loginSenhaInput].forEach(inp => {
   inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') tentarLogin(); });
 });
-atualizarBotoesLogin();
+
+/* ---------- Aba 1: lista dos modelos já cadastrados ---------- */
+const listaModelosAdminEl = document.getElementById('listaModelosAdmin');
+const buscaModelosAdminInput = document.getElementById('buscaModelosAdmin');
+
+function renderListaModelosAdmin(filtro = '') {
+  if (!listaModelosAdminEl) return;
+  const f = normalizar(filtro);
+  const itens = dados
+    .filter(d => !f || d._marcaNorm.includes(f) || d._modeloNorm.includes(f))
+    .slice()
+    .sort((a, b) => (a.marca + a.modelo).localeCompare(b.marca + b.modelo, 'pt-BR'));
+
+  if (!itens.length) {
+    listaModelosAdminEl.innerHTML = `<div class="vazio"><i class="fas fa-mobile-screen-button"></i><p>${f ? 'Nenhum modelo encontrado.' : 'Nenhum modelo cadastrado ainda.'}</p></div>`;
+    return;
+  }
+
+  listaModelosAdminEl.innerHTML = itens.map(d => `
+    <button type="button" class="item-modelo-admin" data-slug="${normalizarSlugModelo(d.marca, d.modelo)}">
+      <div class="item-modelo-admin-info">
+        <span class="item-modelo-admin-modelo">${escaparHtml(d.modelo)}</span>
+        <span class="item-modelo-admin-marca">${escaparHtml(d.marca)}</span>
+      </div>
+      <i class="fas fa-pen"></i>
+    </button>
+  `).join('');
+}
+
+if (listaModelosAdminEl) {
+  listaModelosAdminEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('.item-modelo-admin');
+    if (!btn) return;
+    const slug = btn.dataset.slug;
+    const item = dados.find(d => normalizarSlugModelo(d.marca, d.modelo) === slug);
+    if (item) abrirAdmin(item);
+  });
+}
+
+if (buscaModelosAdminInput) {
+  buscaModelosAdminInput.addEventListener('input', (e) => renderListaModelosAdmin(e.target.value));
+}
 
 /* ---------- Formulário de modelo / adaptação ----------
    Suporta cadastrar VÁRIOS modelos de uma vez para a mesma fabricante.
@@ -833,7 +898,7 @@ function selecionarModeloExistenteGrupo(i, item) {
 
 /* ---------- Abrir / fechar ---------- */
 
-function abrirAdmin() {
+function abrirAdmin(itemParaEditar) {
   adminNovaMarcaInput.value = '';
   adminNovaMarcaInput.style.display = 'none';
   adminGrupos = [criarGrupoVazio()];
@@ -842,9 +907,12 @@ function abrirAdmin() {
   adminErro.style.display = 'none';
   adminSucesso.style.display = 'none';
   popularSelectMarcaAdmin();
-  adminMarcaSelect.value = '';
+  adminMarcaSelect.value = itemParaEditar ? itemParaEditar.marca : '';
   renderGruposAdmin();
   adminOverlay.classList.add('aberto');
+  // Veio de um clique na lista de modelos cadastrados (aba 1): pré-preenche
+  // o formulário com o modelo e as adaptações que ele já tem.
+  if (itemParaEditar) selecionarModeloExistenteGrupo(0, itemParaEditar);
   setTimeout(() => {
     const primeiro = adminGruposLista.querySelector('.admin-modelo-input');
     if (primeiro) primeiro.focus();
@@ -852,6 +920,7 @@ function abrirAdmin() {
 }
 function fecharAdmin() {
   adminOverlay.classList.remove('aberto');
+  if (buscaModelosAdminInput) renderListaModelosAdmin(buscaModelosAdminInput.value);
 }
 
 document.getElementById('adminFechar').addEventListener('click', fecharAdmin);
@@ -1115,6 +1184,7 @@ adminSalvarBtn.addEventListener('click', async () => {
     indexarDados();
     construirSlugParaTexto();
     popularFabricantes();
+    if (buscaModelosAdminInput) renderListaModelosAdmin(buscaModelosAdminInput.value);
 
     adminSucesso.innerHTML = `<i class="fas fa-circle-check"></i> ${nomesModelosSalvos.length > 1 ? `${nomesModelosSalvos.length} modelos salvos` : 'Modelo salvo'}! Já aparece${nomesModelosSalvos.length > 1 ? 'm' : ''} na pesquisa.`;
     adminSucesso.style.display = 'flex';
