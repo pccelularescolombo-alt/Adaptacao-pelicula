@@ -1247,7 +1247,8 @@ const cores = {
   oscal: { fundo:"#9c40dd", texto:"#ffffff" },
   realme: { fundo:"#ffc913", texto:"#000000" },
   tecno: { fundo:"#0064fe", texto:"#ffffff" },
-  jovi: { fundo:"#1c4598", texto:"#ffffff" }
+  jovi: { fundo:"#1c4598", texto:"#ffffff" },
+  Honor: { fundo:"#9c40dd", texto:"#ffffff" },
 };
 
 popularFabricantes();
