@@ -529,14 +529,6 @@ body::before {
   transform: scale(1.1);
 }
 
-.painel-admin-area {
-  margin-bottom: 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
 .btn-admin {
   display: inline-flex;
   align-items: center;
@@ -684,7 +676,6 @@ body::before {
 }
 
 /* ===== Login e formulário de admin (adicionar/editar modelo) ===== */
-.login-modal,
 .admin-modal {
   max-width: 460px;
 }
@@ -1200,16 +1191,8 @@ select.admin-input {
   background: rgba(255, 255, 255, 0.12);
 }
 
-.voto-btn:hover:not(:disabled) {
+.voto-btn:hover {
   transform: scale(1.15);
-}
-
-.voto-btn:disabled {
-  cursor: default;
-}
-
-.voto-btn:not(.votado):disabled {
-  opacity: 0.35;
 }
 
 .voto-btn.votado {

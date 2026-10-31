@@ -48,7 +48,6 @@ try {
    abaixo).
    ============================================================ */
 const dados = [];
-let catalogoCarregado = false;
 
 
 const themeToggle = document.getElementById('themeToggle');
@@ -144,7 +143,7 @@ async function carregarAvaliacoes() {
   } finally {
     avaliacoesCarregadas = true;
     renderResultados(buscaInput.value);
-    if (typeof atualizarPainelSeAberto === 'function') atualizarPainelSeAberto();
+    atualizarPainelSeAberto();
   }
 }
 
@@ -206,7 +205,7 @@ async function votar(slug, tipo, event) {
     const doc = await ref.get();
     avaliacoesCache[slug] = doc.data();
     renderResultados(buscaInput.value);
-    if (typeof atualizarPainelSeAberto === 'function') atualizarPainelSeAberto();
+    atualizarPainelSeAberto();
   } catch (e) {
     console.error(e);
     alert('Não foi possível registrar o voto agora. Verifique a conexão com a internet.');
@@ -246,6 +245,84 @@ function renderTagsAdaptacoes(marca, modelo, adaptacoes) {
   }).join('');
 }
 
+/* ============================================================
+   LOGOS DAS MARCAS (automático)
+   ============================================================
+   Ao cadastrar uma marca, o sistema procura sozinho uma imagem com o
+   nome dela nas pastas "logos" e "logo2". Testa variações do nome
+   (minúsculo, sem acento, sem espaços, com hífen/underline, como foi
+   digitado) e as extensões png, jpg, jpeg, webp e svg. Basta colocar o
+   arquivo na pasta com o nome da marca (ex: "logos/vivo.png").
+   O resultado (achou ou não) fica em cache pra não repetir tentativas. */
+const PASTAS_LOGO_CARDS = ['logos', 'logo2'];   // ordem de busca nos cards da pesquisa
+const PASTAS_LOGO_PLACA = ['logo2', 'logos'];   // ordem de busca nas placas (canvas)
+const EXTENSOES_LOGO = ['png', 'jpg', 'jpeg', 'webp', 'svg'];
+const cacheLogos = {}; // "pasta1|pasta2|marca" -> Promise<string|null>
+
+function variacoesNomeMarca(marca) {
+  const original = String(marca).trim();
+  const minus = original.toLowerCase();
+  const semAcento = minus.normalize('NFD').replace(/[̀-ͯ]/g, '');
+  return [...new Set([
+    minus,
+    semAcento,
+    semAcento.replace(/\s+/g, ''),
+    semAcento.replace(/\s+/g, '-'),
+    semAcento.replace(/\s+/g, '_'),
+    semAcento.replace(/[^a-z0-9]/g, ''),
+    original,
+    original.replace(/\s+/g, '')
+  ].filter(Boolean))];
+}
+
+function testarImagem(url) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = url;
+  });
+}
+
+// Devolve a URL da primeira imagem que existir (ou null se nenhuma existir).
+function descobrirLogoMarca(marca, pastas) {
+  const chave = pastas.join('|') + '|' + marca;
+  if (cacheLogos[chave]) return cacheLogos[chave];
+  cacheLogos[chave] = (async () => {
+    const nomes = variacoesNomeMarca(marca);
+    for (const pasta of pastas) {
+      for (const nome of nomes) {
+        for (const ext of EXTENSOES_LOGO) {
+          const url = `${pasta}/${encodeURIComponent(nome)}.${ext}`;
+          if (await testarImagem(url)) return url;
+        }
+      }
+    }
+    return null;
+  })();
+  return cacheLogos[chave];
+}
+
+// Devolve um <img> já carregado da logo da marca, ou null se não achar.
+async function carregarLogoMarca(marca, pastas) {
+  const url = await descobrirLogoMarca(marca, pastas);
+  if (!url) return null;
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+}
+
+// Preenche as logos dos cards da pesquisa depois que eles entram na tela.
+function resolverLogosCards() {
+  resultadoEl.querySelectorAll('img.brand-logo[data-marca]').forEach(async el => {
+    const url = await descobrirLogoMarca(el.dataset.marca, PASTAS_LOGO_CARDS);
+    if (url) el.src = url;
+  });
+}
+
 function renderVazio(mensagemHtml) {
   resultadoEl.innerHTML = `<div class="vazio">${mensagemHtml}</div>`;
 }
@@ -273,13 +350,12 @@ function renderResultados(busca) {
     return;
   }
 
-  const frag = document.createDocumentFragment();
   const wrapper = document.createElement('div');
   wrapper.innerHTML = resultados.map((d, i) => `
     <div class="card" style="animation-delay:${Math.min(i, 12) * 0.04}s">
       <div class="card-header">
-        <img class="brand-logo" loading="lazy" src="logos/${d.marca.toLowerCase()}.png" alt="${d.marca}"
-             onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>📱</text></svg>'">
+        <img class="brand-logo" data-marca="${escaparHtml(d.marca)}" alt="${escaparHtml(d.marca)}"
+             src="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>📱</text></svg>">
         <div class="card-info">
           <div class="modelo">${d.modelo}</div>
           <div class="marca">${d.marca}</div>
@@ -296,8 +372,8 @@ function renderResultados(busca) {
       </div>
     </div>
   `).join('');
-  frag.appendChild(wrapper);
   resultadoEl.replaceChildren(...wrapper.childNodes);
+  resolverLogosCards();
 }
 
 buscaInput.addEventListener('input', (e) => {
@@ -502,30 +578,40 @@ function normalizarSlugModelo(marca, modelo) {
   return normalizar(marca + modelo);
 }
 
-// Soma (sem duplicar) um {marca, modelo, adaptacoes} vindo do Firestore (ou
-// recém salvo pelo formulário) dentro do array "dados" já usado pela busca.
-function mesclarModeloNoSistema(info) {
-  if (!info || !info.marca || !info.modelo) return;
-  const slug = normalizarSlugModelo(info.marca, info.modelo);
-  const existente = dados.find(d => normalizarSlugModelo(d.marca, d.modelo) === slug);
-  const novasAdapt = Array.isArray(info.adaptacoes) ? info.adaptacoes : [];
-  const marcandoSemAdaptacao = novasAdapt.length === 1 && novasAdapt[0] === 'Sem Adaptação';
+/* Edição das fichas no banco.
+   O problema antigo: o salvamento usava arrayUnion, que só SOMA itens à lista.
+   Por isso, remover ou trocar uma adaptação no formulário não tinha efeito no
+   banco (e a ficha do outro modelo continuava apontando de volta). Agora cada
+   ficha tem a lista de adaptações regravada por inteiro. */
+const mesmoNome = (a, b) => normalizar(a) === normalizar(b);
+const comNomes = (lista, nomes) => {
+  const r = [...lista];
+  nomes.forEach(n => { if (!r.some(x => mesmoNome(x, n))) r.push(n); });
+  return r;
+};
+const semNomes = (lista, nomes) => lista.filter(x => !nomes.some(n => mesmoNome(x, n)));
 
-  if (existente) {
-    if (marcandoSemAdaptacao) {
-      // Substitui de vez, em vez de somar — não faz sentido ter "Sem Adaptação"
-      // misturado com adaptações reais na mesma lista.
-      existente.adaptacoes = ['Sem Adaptação'];
-      return;
-    }
-    if (!existente.adaptacoes || existente.adaptacoes[0] === "Sem Adaptação") existente.adaptacoes = [];
-    novasAdapt.forEach(a => {
-      const jaTem = existente.adaptacoes.some(x => normalizar(x) === normalizar(a));
-      if (!jaTem) existente.adaptacoes.push(a);
-    });
-  } else {
-    dados.push({ marca: info.marca, modelo: info.modelo, adaptacoes: marcandoSemAdaptacao ? ['Sem Adaptação'] : [...novasAdapt] });
-  }
+// Lê a ficha no banco, aplica "alterar" na lista de adaptações reais e grava a
+// lista completa. Lista vazia vira ["Sem Adaptação"]. Devolve a lista gravada.
+function atualizarFicha(marca, modelo, alterar) {
+  const ref = db.collection('modelos').doc(normalizarSlugModelo(marca, modelo));
+  return db.runTransaction(async (t) => {
+    const snap = await t.get(ref);
+    const atuais = snap.exists ? (snap.data().adaptacoes || []).filter(a => a !== 'Sem Adaptação') : [];
+    const novas = alterar(atuais);
+    const lista = novas.length ? novas : ['Sem Adaptação'];
+    t.set(ref, { marca, modelo, adaptacoes: lista });
+    return lista;
+  });
+}
+
+// Troca (não soma) a lista de adaptações de uma ficha no array "dados" usado
+// pela busca; cria a ficha se ainda não existir.
+function definirAdaptacoesNoSistema(marca, modelo, adaptacoes) {
+  const slug = normalizarSlugModelo(marca, modelo);
+  const existente = dados.find(d => normalizarSlugModelo(d.marca, d.modelo) === slug);
+  if (existente) existente.adaptacoes = adaptacoes;
+  else dados.push({ marca, modelo, adaptacoes });
 }
 
 /* ------------------------------------------------------------
@@ -586,7 +672,6 @@ async function carregarCatalogo() {
   if (typeof db === 'undefined') {
     // Sem Firebase configurado: se não tinha cache, avisa e mantém a busca vazia.
     if (!tinhaCache) marcarCarregandoCatalogo(false);
-    catalogoCarregado = true;
     return;
   }
 
@@ -600,7 +685,6 @@ async function carregarCatalogo() {
       renderVazio('<i class="fas fa-triangle-exclamation"></i><p>Não foi possível carregar o catálogo agora. Verifique sua conexão e recarregue a página.</p>');
     }
   } finally {
-    catalogoCarregado = true;
     marcarCarregandoCatalogo(false);
     indexarDados();
     construirSlugParaTexto();
@@ -700,8 +784,8 @@ if (buscaModelosAdminInput) {
    Suporta cadastrar VÁRIOS modelos de uma vez para a mesma fabricante.
    Cada "grupo" (bloco) do formulário tem seu próprio campo de modelo e sua
    própria lista de adaptações; a fabricante é única e vale pra todos os
-   grupos. Ao salvar, cada grupo vira um documento no Firestore, do mesmo
-   jeito que já acontecia antes (arrayUnion + ligação recíproca). */
+   grupos. Ao salvar, cada grupo vira um documento no Firestore (lista de
+   adaptações regravada por inteiro) e as fichas ligadas são sincronizadas. */
 const adminOverlay = document.getElementById('adminOverlay');
 const adminGruposLista = document.getElementById('adminGruposLista');
 const adminAddGrupoBtn = document.getElementById('adminAddGrupoBtn');
@@ -1120,67 +1204,45 @@ adminSalvarBtn.addEventListener('click', async () => {
 
     for (const g of adminGrupos) {
       const modeloNome = g.modelo.trim();
-      const slugPrincipal = normalizarSlugModelo(marcaNome, modeloNome);
+      // "Sem Adaptação" = lista vazia: nada é ligado, e tudo que estava ligado é desfeito.
+      const chips = g.semAdaptacao ? [] : g.chips;
+      const nomesAdaptacoes = chips.map(c => c.modelo);
 
-      if (g.semAdaptacao) {
-        // "Sem Adaptação": grava só essa marcação no próprio modelo (substitui
-        // o campo por completo, sem arrayUnion) e NÃO cria nem liga nenhuma
-        // outra ficha — é justamente pra evitar que "Sem Adaptação" vire um
-        // "modelo" cadastrado por engano.
-        await db.collection('modelos').doc(slugPrincipal).set({
-          marca: marcaNome,
-          modelo: modeloNome,
-          adaptacoes: ['Sem Adaptação']
-        }, { merge: true });
+      // Adaptações que a ficha tinha ANTES de editar (lidas do estado atual de
+      // "dados", ainda sem a alteração) e que foram retiradas agora.
+      const fichaAtual = dados.find(d => normalizarSlugModelo(d.marca, d.modelo) === normalizarSlugModelo(marcaNome, modeloNome));
+      const removidas = (fichaAtual ? fichaAtual.adaptacoes : [])
+        .filter(a => a !== 'Sem Adaptação' && !nomesAdaptacoes.some(n => mesmoNome(n, a)));
 
-        mesclarModeloNoSistema({ marca: marcaNome, modelo: modeloNome, adaptacoes: ['Sem Adaptação'] });
-        nomesModelosSalvos.push(modeloNome);
-        continue;
-      }
+      // 1) Ficha principal: grava exatamente a lista que está no formulário.
+      const listaPrincipal = await atualizarFicha(marcaNome, modeloNome, () => nomesAdaptacoes);
+      definirAdaptacoesNoSistema(marcaNome, modeloNome, listaPrincipal);
 
-      const nomesAdaptacoes = g.chips.map(c => c.modelo);
-
-      // Salva/atualiza o modelo principal com as adaptações escolhidas.
-      await db.collection('modelos').doc(slugPrincipal).set({
-        marca: marcaNome,
-        modelo: modeloNome,
-        adaptacoes: firebase.firestore.FieldValue.arrayUnion(...nomesAdaptacoes)
-      }, { merge: true });
-
-      // Ligação recíproca EM MALHA: se A foi cadastrado com as adaptações B e
-      // C, então B também precisa ganhar A e C como adaptação, e C precisa
-      // ganhar A e B — as três fichas ficam todas ligadas entre si, não só
-      // de volta pro modelo principal.
-      // Se "c.marca" não veio de uma ficha existente (texto digitado livre),
-      // só criamos a ficha nova pra ele quando o admin marcou a opção
-      // "criar ficha própria" — usando a fabricante escolhida no seletor de
-      // cada chip (pode ser a mesma do modelo principal ou outra qualquer).
-      for (const c of g.chips) {
+      // 2) Ligação recíproca EM MALHA: se A tem as adaptações B e C, então B
+      // ganha A e C, e C ganha A e B. Se "c.marca" não veio de uma ficha
+      // existente (texto digitado livre), só criamos a ficha nova quando o
+      // admin marcou "criar ficha própria" — com a fabricante escolhida no chip.
+      for (const c of chips) {
         const marcaLigacao = c.marca || (g.criarNovasFichas ? (c.marcaNova || marcaNome) : null);
-        if (!marcaLigacao) continue; // texto digitado livre e "criar ficha" desmarcado — não dá pra ligar de volta
-        const ligacoes = new Set([modeloNome, ...g.chips.map(o => o.modelo)]);
-        ligacoes.delete(c.modelo); // não liga o item com ele mesmo
-        const slugOutro = normalizarSlugModelo(marcaLigacao, c.modelo);
-        await db.collection('modelos').doc(slugOutro).set({
-          marca: marcaLigacao,
-          modelo: c.modelo,
-          adaptacoes: firebase.firestore.FieldValue.arrayUnion(...ligacoes)
-        }, { merge: true });
+        if (!marcaLigacao) continue;
+        const ligacoes = [modeloNome, ...nomesAdaptacoes.filter(n => n !== c.modelo)];
+        const lista = await atualizarFicha(marcaLigacao, c.modelo, atuais => comNomes(atuais, ligacoes));
+        definirAdaptacoesNoSistema(marcaLigacao, c.modelo, lista);
       }
 
-      // Atualiza a busca na hora, sem precisar recarregar a página.
-      mesclarModeloNoSistema({ marca: marcaNome, modelo: modeloNome, adaptacoes: nomesAdaptacoes });
-      g.chips.forEach(c => {
-        const marcaLigacao = c.marca || (g.criarNovasFichas ? marcaNome : null);
-        if (marcaLigacao) {
-          const ligacoes = new Set([modeloNome, ...g.chips.map(o => o.modelo)]);
-          ligacoes.delete(c.modelo);
-          mesclarModeloNoSistema({ marca: marcaLigacao, modelo: c.modelo, adaptacoes: [...ligacoes] });
+      // 3) Adaptação removida: a ficha do outro modelo deixa de apontar de volta.
+      for (const nome of removidas) {
+        const fichasLigadas = dados.filter(d => mesmoNome(d.modelo, nome) && (d.adaptacoes || []).some(a => mesmoNome(a, modeloNome)));
+        for (const d of fichasLigadas) {
+          const lista = await atualizarFicha(d.marca, d.modelo, atuais => semNomes(atuais, [modeloNome]));
+          definirAdaptacoesNoSistema(d.marca, d.modelo, lista);
         }
-      });
+      }
+
       nomesModelosSalvos.push(modeloNome);
     }
 
+    salvarCacheCatalogo(); // sem isso, a próxima visita mostraria o catálogo antigo por um instante
     indexarDados();
     construirSlugParaTexto();
     popularFabricantes();
@@ -1332,13 +1394,23 @@ function gerarImagemPelicula() {
   ctx.fill();
   ctx.shadowColor = "transparent";
 
-  const logo = new Image();
-  logo.src = `logo2/${achado.marca.toLowerCase()}.png`;
-  logo.onload = () => {
-    const imgW = boxW - 40;
-    const imgH = logo.height * (imgW / logo.width);
+  carregarLogoMarca(achado.marca, PASTAS_LOGO_PLACA).then(logo => {
+    if (!logo) {
+      // Sem imagem nas pastas: escreve o nome da marca no quadro branco.
+      ctx.fillStyle = "#000000";
+      ctx.textAlign = "center";
+      ctx.font = "bold 40px Arial";
+      ctx.fillText(achado.marca.toUpperCase(), 591 / 2, boxY + boxH / 2 + 14);
+      return;
+    }
+    let imgW = boxW - 40;
+    let imgH = logo.height * (imgW / logo.width);
+    if (imgH > boxH - 20) {
+      imgH = boxH - 20;
+      imgW = logo.width * (imgH / logo.height);
+    }
     ctx.drawImage(logo, boxX + (boxW - imgW) / 2, boxY + (boxH - imgH) / 2, imgW, imgH);
-  };
+  });
 
   y = boxY + boxH + 50;
 
@@ -1545,33 +1617,26 @@ function gerarImagemCapa() {
 
 
   // 5. Carregar e desenhar a logo
-  const logo = new Image();
-  logo.src = `logo2/${fabricante.toLowerCase()}.png`;
-  
   const linhasTexto = [linha1, linha2, linha3].filter(l => l !== "");
-  
-  logo.onload = () => {
-    const maxImgW = boxW - 40;
-    const imgRatio = logo.width / logo.height;
-    let imgW = maxImgW;
-    let imgH = imgW / imgRatio;
-    
+
+  carregarLogoMarca(fabricante, PASTAS_LOGO_PLACA).then(logo => {
+    if (!logo) {
+      // Fallback caso nenhuma imagem exista nas pastas
+      ctx.fillStyle = est.fundo;
+      ctx.font = "bold 42px Arial";
+      ctx.fillText(fabricante.toUpperCase(), 591 / 2, boxY + boxH / 2 + 15);
+      desenharTextoModeloCapa(ctx, linhasTexto, b, boxY + boxH);
+      return;
+    }
+    let imgW = boxW - 40;
+    let imgH = imgW / (logo.width / logo.height);
     if (imgH > boxH - 20) {
       imgH = boxH - 20;
-      imgW = imgH * imgRatio;
+      imgW = imgH * (logo.width / logo.height);
     }
-    
     ctx.drawImage(logo, boxX + (boxW - imgW) / 2, boxY + (boxH - imgH) / 2, imgW, imgH);
     desenharTextoModeloCapa(ctx, linhasTexto, b, boxY + boxH);
-  };
-  
-  // Fallback caso a imagem não carregue
-  logo.onerror = () => {
-    ctx.fillStyle = est.fundo;
-    ctx.font = "bold 42px Arial";
-    ctx.fillText(fabricante.toUpperCase(), 591 / 2, boxY + boxH / 2 + 15);
-    desenharTextoModeloCapa(ctx, linhasTexto, b, boxY + boxH);
-  };
+  });
 }
 
 function desenharTextoModeloCapa(ctx, linhasTexto, b, startY) {
