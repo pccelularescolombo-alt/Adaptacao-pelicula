@@ -92,7 +92,10 @@ service cloud.firestore {
                             && request.resource.data.modelo is string
                             && request.resource.data.adaptacoes is list;
 
-      allow delete: if false;
+      // Permite APAGAR uma ficha de modelo (botão "Apagar" do painel admin).
+      // Mesma limitação da senha do painel: a regra não sabe quem está
+      // apagando — ver "LIMITAÇÃO IMPORTANTE SOBRE O PAINEL DE ADMIN".
+      allow delete: if true;
     }
 
     // Nega tudo que não seja explicitamente liberado acima (mesma ideia
@@ -113,6 +116,8 @@ O QUE ESSAS REGRAS FAZEM
 - Só é possível ESCREVER avaliações incrementando like ou dislike de
   1 em 1 — ninguém consegue, mexendo no navegador, zerar os votos de
   um concorrente ou inflar um número direto.
+- Fichas de "modelos" podem ser APAGADAS pelo painel admin (as avaliações
+  continuam protegidas e não podem ser apagadas).
 - Só é possível ESCREVER em "modelos" no formato certo (marca,
   modelo e lista de adaptações) — não dá pra mandar qualquer outra
   coisa pro banco.

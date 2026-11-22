@@ -593,8 +593,18 @@ const semNomes = (lista, nomes) => lista.filter(x => !nomes.some(n => mesmoNome(
 
 // Lê a ficha no banco, aplica "alterar" na lista de adaptações reais e grava a
 // lista completa. Lista vazia vira ["Sem Adaptação"]. Devolve a lista gravada.
-function atualizarFicha(marca, modelo, alterar) {
-  const ref = db.collection('modelos').doc(normalizarSlugModelo(marca, modelo));
+// IMPORTANTE (correção da duplicação): cada ficha guarda o ID REAL do documento
+// no Firestore em "_id". Antes o sistema recalculava o ID a partir do nome, e
+// quando o ID original (do catálogo migrado) era diferente do recalculado, o
+// salvamento criava um documento novo em vez de atualizar o antigo.
+function idDaFicha(marca, modelo) {
+  const slug = normalizarSlugModelo(marca, modelo);
+  const existente = dados.find(d => normalizarSlugModelo(d.marca, d.modelo) === slug);
+  return (existente && existente._id) || slug;
+}
+
+function atualizarFicha(marca, modelo, alterar, idForcado) {
+  const ref = db.collection('modelos').doc(idForcado || idDaFicha(marca, modelo));
   return db.runTransaction(async (t) => {
     const snap = await t.get(ref);
     const atuais = snap.exists ? (snap.data().adaptacoes || []).filter(a => a !== 'Sem Adaptação') : [];
@@ -602,16 +612,61 @@ function atualizarFicha(marca, modelo, alterar) {
     const lista = novas.length ? novas : ['Sem Adaptação'];
     t.set(ref, { marca, modelo, adaptacoes: lista });
     return lista;
-  });
+  }).then(lista => { lista._id = ref.id; return lista; });
 }
 
 // Troca (não soma) a lista de adaptações de uma ficha no array "dados" usado
 // pela busca; cria a ficha se ainda não existir.
-function definirAdaptacoesNoSistema(marca, modelo, adaptacoes) {
+function definirAdaptacoesNoSistema(marca, modelo, adaptacoes, id) {
   const slug = normalizarSlugModelo(marca, modelo);
-  const existente = dados.find(d => normalizarSlugModelo(d.marca, d.modelo) === slug);
-  if (existente) existente.adaptacoes = adaptacoes;
-  else dados.push({ marca, modelo, adaptacoes });
+  const existente = (id && dados.find(d => d._id === id)) ||
+                    dados.find(d => normalizarSlugModelo(d.marca, d.modelo) === slug);
+  if (existente) {
+    existente.marca = marca;
+    existente.modelo = modelo;
+    existente.adaptacoes = adaptacoes;
+    if (id) existente._id = id;
+  } else {
+    dados.push({ marca, modelo, adaptacoes, _id: id || slug });
+  }
+}
+
+// Apaga uma ficha do banco e tira o nome dela da lista de adaptações das
+// outras fichas que apontavam pra ela. Exige a regra "allow delete" no
+// Firestore (ver REGRAS_FIRESTORE.txt).
+async function apagarFicha(item) {
+  const id = item._id || normalizarSlugModelo(item.marca, item.modelo);
+  await db.collection('modelos').doc(id).delete();
+
+  const idx = dados.findIndex(d => d === item || d._id === id);
+  if (idx >= 0) dados.splice(idx, 1);
+
+  const ligadas = dados.filter(d => d !== item && (d.adaptacoes || []).some(a => mesmoNome(a, item.modelo)));
+  for (const d of ligadas) {
+    const lista = await atualizarFicha(d.marca, d.modelo, atuais => semNomes(atuais, [item.modelo]), d._id);
+    definirAdaptacoesNoSistema(d.marca, d.modelo, lista, lista._id);
+  }
+
+  salvarCacheCatalogo();
+  indexarDados();
+  construirSlugParaTexto();
+  popularFabricantes();
+  if (buscaModelosAdminInput) renderListaModelosAdmin(buscaModelosAdminInput.value);
+  renderResultados(buscaInput.value);
+}
+
+async function confirmarEApagarFicha(item) {
+  if (typeof db === 'undefined') { alert('O banco de dados não está configurado.'); return false; }
+  const ok = confirm(`Apagar "${item.marca} • ${item.modelo}" do sistema?\n\nEssa linha some da pesquisa e o nome dela também é removido das adaptações dos outros modelos. Não dá pra desfazer.`);
+  if (!ok) return false;
+  try {
+    await apagarFicha(item);
+    return true;
+  } catch (e) {
+    console.error(e);
+    alert('Não foi possível apagar. Confira se as novas regras do Firestore (com "allow delete: if true" em modelos) foram publicadas.');
+    return false;
+  }
 }
 
 /* ------------------------------------------------------------
@@ -621,11 +676,11 @@ function definirAdaptacoesNoSistema(marca, modelo, adaptacoes) {
    esperar o Firestore responder de novo. O site sempre confere
    se tem algo mais novo no banco em seguida, em segundo plano.
    ------------------------------------------------------------ */
-const CACHE_CATALOGO_CHAVE = 'catalogoCache_v1';
+const CACHE_CATALOGO_CHAVE = 'catalogoCache_v2';
 
 function salvarCacheCatalogo() {
   try {
-    const limpo = dados.map(d => ({ marca: d.marca, modelo: d.modelo, adaptacoes: d.adaptacoes }));
+    const limpo = dados.map(d => ({ marca: d.marca, modelo: d.modelo, adaptacoes: d.adaptacoes, _id: d._id }));
     localStorage.setItem(CACHE_CATALOGO_CHAVE, JSON.stringify({ dados: limpo, ts: Date.now() }));
   } catch (e) {
     // localStorage cheio ou indisponível — sem problema, só não guarda cache.
@@ -678,7 +733,7 @@ async function carregarCatalogo() {
   try {
     const snap = await db.collection('modelos').get();
     dados.length = 0; // troca o conteúdo pelo que acabou de vir do banco, já atualizado
-    snap.forEach(doc => dados.push(doc.data()));
+    snap.forEach(doc => dados.push({ ...doc.data(), _id: doc.id }));
   } catch (e) {
     console.warn('Não foi possível carregar o catálogo do Firebase:', e);
     if (!tinhaCache && !dados.length) {
@@ -755,23 +810,39 @@ function renderListaModelosAdmin(filtro = '') {
     return;
   }
 
+  // Identifica cada linha pelo ID real do documento (e não pelo nome), assim
+  // fichas duplicadas antigas aparecem separadas e dá pra apagar a desatualizada.
   listaModelosAdminEl.innerHTML = itens.map(d => `
-    <button type="button" class="item-modelo-admin" data-slug="${normalizarSlugModelo(d.marca, d.modelo)}">
-      <div class="item-modelo-admin-info">
-        <span class="item-modelo-admin-modelo">${escaparHtml(d.modelo)}</span>
-        <span class="item-modelo-admin-marca">${escaparHtml(d.marca)}</span>
-      </div>
-      <i class="fas fa-pen"></i>
-    </button>
+    <div class="item-modelo-admin-linha">
+      <button type="button" class="item-modelo-admin" data-id="${escaparHtml(d._id || normalizarSlugModelo(d.marca, d.modelo))}" title="Editar">
+        <div class="item-modelo-admin-info">
+          <span class="item-modelo-admin-modelo">${escaparHtml(d.modelo)}</span>
+          <span class="item-modelo-admin-marca">${escaparHtml(d.marca)}</span>
+        </div>
+        <i class="fas fa-pen"></i>
+      </button>
+      <button type="button" class="item-modelo-admin-apagar" data-id="${escaparHtml(d._id || normalizarSlugModelo(d.marca, d.modelo))}" title="Apagar esta linha" aria-label="Apagar ${escaparHtml(d.modelo)}">
+        <i class="fas fa-trash"></i>
+      </button>
+    </div>
   `).join('');
 }
 
+function acharFichaPorId(id) {
+  return dados.find(d => (d._id || normalizarSlugModelo(d.marca, d.modelo)) === id);
+}
+
 if (listaModelosAdminEl) {
-  listaModelosAdminEl.addEventListener('click', (e) => {
+  listaModelosAdminEl.addEventListener('click', async (e) => {
+    const btnApagar = e.target.closest('.item-modelo-admin-apagar');
+    if (btnApagar) {
+      const item = acharFichaPorId(btnApagar.dataset.id);
+      if (item) await confirmarEApagarFicha(item);
+      return;
+    }
     const btn = e.target.closest('.item-modelo-admin');
     if (!btn) return;
-    const slug = btn.dataset.slug;
-    const item = dados.find(d => normalizarSlugModelo(d.marca, d.modelo) === slug);
+    const item = acharFichaPorId(btn.dataset.id);
     if (item) abrirAdmin(item);
   });
 }
@@ -847,6 +918,10 @@ function renderGruposAdmin() {
     <div class="admin-grupo" data-i="${i}">
       <div class="admin-grupo-topo">
         <span class="admin-grupo-numero">Modelo ${i + 1}</span>
+        ${g.modeloExistente ? `
+          <button type="button" class="admin-grupo-apagar-ficha" data-i="${i}" title="Apagar este modelo do sistema">
+            <i class="fas fa-trash-can"></i> Apagar do sistema
+          </button>` : ''}
         ${adminGrupos.length > 1 ? `
           <button type="button" class="admin-grupo-remover" data-i="${i}" title="Remover este modelo">
             <i class="fas fa-trash"></i>
@@ -1096,7 +1171,23 @@ adminGruposLista.addEventListener('keydown', (e) => {
   renderChipsGrupo(i);
 });
 
-adminGruposLista.addEventListener('click', (e) => {
+adminGruposLista.addEventListener('click', async (e) => {
+  const btnApagarFicha = e.target.closest('.admin-grupo-apagar-ficha');
+  if (btnApagarFicha) {
+    const i = Number(btnApagarFicha.dataset.i);
+    const item = adminGrupos[i] && adminGrupos[i].modeloExistente;
+    if (!item) return;
+    const apagou = await confirmarEApagarFicha(item);
+    if (!apagou) return;
+    if (adminGrupos.length > 1) {
+      adminGrupos.splice(i, 1);
+      renderGruposAdmin();
+    } else {
+      fecharAdmin();
+    }
+    return;
+  }
+
   const btnModelo = e.target.closest('.admin-sugestao-modelo');
   if (btnModelo) {
     const i = Number(btnModelo.dataset.i);
@@ -1178,23 +1269,8 @@ adminSalvarBtn.addEventListener('click', async () => {
     return;
   }
 
-  // Se algum grupo começou a partir de um modelo já existente e o nome (ou a
-  // fabricante) foi alterado depois, o ID salvo no Firestore muda — e como
-  // não é permitido apagar documentos, a ficha antiga fica esquecida no
-  // banco (parece "duplicada"). Avisa antes de salvar pra dar chance de
-  // corrigir.
-  const renomeados = adminGrupos
-    .filter(g => g.modeloExistente)
-    .filter(g => normalizarSlugModelo(g.modeloExistente.marca, g.modeloExistente.modelo) !== normalizarSlugModelo(marcaNome, g.modelo.trim()));
-  if (renomeados.length) {
-    const lista = renomeados.map(g => `"${g.modeloExistente.marca} • ${g.modeloExistente.modelo}" → "${marcaNome} • ${g.modelo.trim()}"`).join('\n');
-    const continuar = confirm(
-      `Você mudou o nome ou a fabricante de um modelo que já existia:\n\n${lista}\n\n` +
-      `Isso vai criar uma ficha NOVA com o nome atualizado, e a ficha antiga vai continuar no banco ` +
-      `(o sistema não apaga fichas automaticamente). Quer continuar mesmo assim?`
-    );
-    if (!continuar) return;
-  }
+  // Renomear um modelo já existente agora atualiza o MESMO documento do banco
+  // (pelo ID real guardado em "_id"), então não cria mais uma segunda linha.
 
   adminSalvarBtn.disabled = true;
   adminSalvarBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
@@ -1210,13 +1286,27 @@ adminSalvarBtn.addEventListener('click', async () => {
 
       // Adaptações que a ficha tinha ANTES de editar (lidas do estado atual de
       // "dados", ainda sem a alteração) e que foram retiradas agora.
-      const fichaAtual = dados.find(d => normalizarSlugModelo(d.marca, d.modelo) === normalizarSlugModelo(marcaNome, modeloNome));
+      const fichaAtual = g.modeloExistente ||
+        dados.find(d => normalizarSlugModelo(d.marca, d.modelo) === normalizarSlugModelo(marcaNome, modeloNome));
       const removidas = (fichaAtual ? fichaAtual.adaptacoes : [])
         .filter(a => a !== 'Sem Adaptação' && !nomesAdaptacoes.some(n => mesmoNome(n, a)));
+      const nomeAntigo = g.modeloExistente ? g.modeloExistente.modelo : null;
+      const idPrincipal = g.modeloExistente ? g.modeloExistente._id : undefined;
 
-      // 1) Ficha principal: grava exatamente a lista que está no formulário.
-      const listaPrincipal = await atualizarFicha(marcaNome, modeloNome, () => nomesAdaptacoes);
-      definirAdaptacoesNoSistema(marcaNome, modeloNome, listaPrincipal);
+      // 1) Ficha principal: grava exatamente a lista que está no formulário,
+      // no MESMO documento de antes (mesmo que o nome tenha mudado).
+      const listaPrincipal = await atualizarFicha(marcaNome, modeloNome, () => nomesAdaptacoes, idPrincipal);
+      definirAdaptacoesNoSistema(marcaNome, modeloNome, listaPrincipal, listaPrincipal._id);
+
+      // 1b) Se o nome mudou, as outras fichas que apontavam pro nome antigo
+      // passam a apontar pro nome novo.
+      if (nomeAntigo && !mesmoNome(nomeAntigo, modeloNome)) {
+        const apontavam = dados.filter(d => d._id !== listaPrincipal._id && (d.adaptacoes || []).some(a => mesmoNome(a, nomeAntigo)));
+        for (const d of apontavam) {
+          const lista = await atualizarFicha(d.marca, d.modelo, atuais => comNomes(semNomes(atuais, [nomeAntigo]), [modeloNome]), d._id);
+          definirAdaptacoesNoSistema(d.marca, d.modelo, lista, lista._id);
+        }
+      }
 
       // 2) Ligação recíproca EM MALHA: se A tem as adaptações B e C, então B
       // ganha A e C, e C ganha A e B. Se "c.marca" não veio de uma ficha
@@ -1227,15 +1317,15 @@ adminSalvarBtn.addEventListener('click', async () => {
         if (!marcaLigacao) continue;
         const ligacoes = [modeloNome, ...nomesAdaptacoes.filter(n => n !== c.modelo)];
         const lista = await atualizarFicha(marcaLigacao, c.modelo, atuais => comNomes(atuais, ligacoes));
-        definirAdaptacoesNoSistema(marcaLigacao, c.modelo, lista);
+        definirAdaptacoesNoSistema(marcaLigacao, c.modelo, lista, lista._id);
       }
 
       // 3) Adaptação removida: a ficha do outro modelo deixa de apontar de volta.
       for (const nome of removidas) {
         const fichasLigadas = dados.filter(d => mesmoNome(d.modelo, nome) && (d.adaptacoes || []).some(a => mesmoNome(a, modeloNome)));
         for (const d of fichasLigadas) {
-          const lista = await atualizarFicha(d.marca, d.modelo, atuais => semNomes(atuais, [modeloNome]));
-          definirAdaptacoesNoSistema(d.marca, d.modelo, lista);
+          const lista = await atualizarFicha(d.marca, d.modelo, atuais => semNomes(atuais, [modeloNome]), d._id);
+          definirAdaptacoesNoSistema(d.marca, d.modelo, lista, lista._id);
         }
       }
 
@@ -1345,6 +1435,31 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
+// Máximo de adaptações impressas na placa de película (mais que isso deixa a
+// letra pequena demais pra ler).
+const MAX_ADAPTACOES_PLACA = 8;
+
+// Escolhe as adaptações da placa: as mais curtidas primeiro; sem votos (ou
+// empatadas), vale a ordem em que foram cadastradas. Adaptações reprovadas
+// pelas lojas (que já somem da pesquisa) ficam de fora.
+function selecionarAdaptacoesPlaca(achado) {
+  const todas = (achado.adaptacoes || []).filter(a => a !== 'Sem Adaptação');
+  if (!todas.length) return achado.adaptacoes || [];
+
+  const candidatas = todas.map((nome, ordem) => {
+    const slug = slugAvaliacao(achado.marca, achado.modelo, nome);
+    const { likes, dislikes } = votosDoSlug(slug);
+    const reprovada = avaliacoesCarregadas && statusAdaptacao(slug).reprovada;
+    return { nome, ordem, likes: likes || 0, dislikes: dislikes || 0, reprovada };
+  }).filter(c => !c.reprovada);
+
+  // Se todas estiverem reprovadas, não deixa a placa em branco.
+  const base = candidatas.length ? candidatas : todas.map((nome, ordem) => ({ nome, ordem, likes: 0, dislikes: 0 }));
+
+  base.sort((a, b) => (b.likes - a.likes) || (a.dislikes - b.dislikes) || (a.ordem - b.ordem));
+  return base.slice(0, MAX_ADAPTACOES_PLACA).map(c => c.nome);
+}
+
 function gerarImagemPelicula() {
   const fabricante = document.getElementById('fabricante').value;
   const modelo = document.getElementById('modelo').value;
@@ -1432,7 +1547,8 @@ function gerarImagemPelicula() {
 
   const areaAltura = 591 - y - b - 10;
   const areaLargura = 591 - 50;
-  const numAdaptacoes = achado.adaptacoes.length;
+  const adaptacoesPlaca = selecionarAdaptacoesPlaca(achado);
+  const numAdaptacoes = adaptacoesPlaca.length;
   
   let colunas;
   if (numAdaptacoes <= 5) colunas = 1;
@@ -1459,7 +1575,7 @@ function gerarImagemPelicula() {
     textoMuitoLongo = false;
     ctx.font = `bold ${fonte}px Arial`;
     
-    achado.adaptacoes.forEach(t => {
+    adaptacoesPlaca.forEach(t => {
       if (ctx.measureText(t).width > larguraCol - 8) textoMuitoLongo = true;
     });
     
@@ -1474,7 +1590,7 @@ function gerarImagemPelicula() {
   const alturaTotal = linhasPorCol * (fonte + espacamento) - espacamento;
   const yInicio = y + (areaAltura - alturaTotal) / 2;
   
-  achado.adaptacoes.forEach((t, i) => {
+  adaptacoesPlaca.forEach((t, i) => {
     const col = Math.floor(i / linhasPorCol);
     const lin = i % linhasPorCol;
     const x = inicioX + col * (larguraCol + gap) + larguraCol / 2;
